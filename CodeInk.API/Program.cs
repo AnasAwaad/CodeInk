@@ -6,7 +6,7 @@ namespace CodeInk.API;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,33 @@ public class Program
         #endregion
 
         var app = builder.Build();
+
+        #region SeedData
+        // group of services lifeTime scooped
+        using var scope = app.Services.CreateScope();
+
+        // services its self
+        var services = scope.ServiceProvider;
+
+        // ask CLR to create object from class implement interface (ILoggerFactory) explicitly
+        var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+        try
+        {
+            // ask CLR to create object from dbContext explicitly
+            var dbContext = services.GetRequiredService<AppDbContext>();
+
+            await AppDbContextSeed.SeedDataAsync(dbContext);
+        }
+        catch (Exception ex)
+        {
+            var logger = loggerFactory.CreateLogger<Program>();
+            logger.LogError(ex, "An Error Occured During Seed Data");
+        }
+
+
+
+        #endregion
 
         #region Configure the HTTP request pipeline.
 

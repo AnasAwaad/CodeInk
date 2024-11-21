@@ -1,0 +1,66 @@
+[
+  {
+    "Title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+    "ISBN": "9780132350884",
+    "Author": "Robert C. Martin",
+    "Price": 350.00,
+    "Description": "A guide to producing clean, maintainable, and professional-grade code.",
+    "CoverImageUrl": "https://example.com/cleancode.jpg"
+  },
+  {
+    "Title": "Refactoring: Improving the Design of Existing Code",
+    "ISBN": "9780201485677",
+    "Author": "Martin Fowler",
+    "Price": 450.00,
+    "Description": "A practical guide to improving the design of existing code.",
+    "CoverImageUrl": "https://example.com/refactoring.jpg"
+  },
+  {
+    "Title": "You Don't Know JS: Scope & Closures",
+    "ISBN": "9781449335588",
+    "Author": "Kyle Simpson",
+    "Price": 150.00,
+    "Description": "Part of the 'You Don't Know JS' series, this book dives deep into closures and scope.",
+    "CoverImageUrl": "https://example.com/ydkjs.jpg"
+  },
+  {
+    "Title": "The Pragmatic Programmer",
+    "ISBN": "9780201616224",
+    "Author": "Andrew Hunt, David Thomas",
+    "Price": 400.00,
+    "Description": "A classic guide to the best practices of programming.",
+    "CoverImageUrl": "https://example.com/pragmatic.jpg"
+  },
+  {
+    "Title": "React Clean Code",
+    "ISBN": "9781234567890",
+    "Author": "Juntao Qiu",
+    "Price": 209.00,
+    "Description": "A guide to writing clean code with React.",
+    "CoverImageUrl": "https://example.com/reactcleancode.jpg"
+  },
+  {
+    "Title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+    "ISBN": "9780201633610",
+    "Author": "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
+    "Price": 500.00,
+    "Description": "A foundational book on software design patterns.",
+    "CoverImageUrl": "https://example.com/designpatterns.jpg"
+  },
+  {
+    "Title": "Eloquent JavaScript",
+    "ISBN": "9781593279509",
+    "Author": "Marijn Haverbeke",
+    "Price": 300.00,
+    "Description": "A book providing an introduction to JavaScript programming.",
+    "CoverImageUrl": "https://example.com/eloquentjs.jpg"
+  },
+  {
+    "Title": "Introduction to Algorithms",
+    "ISBN": "9780262033848",
+    "Author": "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
+    "Price": 600.00,
+    "Description": "A comprehensive guide to algorithms and data structures.",
+    "CoverImageUrl": "https://example.com/algorithms.jpg"
+  }
+]
