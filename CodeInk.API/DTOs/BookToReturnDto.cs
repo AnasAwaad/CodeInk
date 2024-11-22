@@ -8,5 +8,5 @@ public class BookToReturnDto
     public string Author { get; set; } = null!;
     public decimal Price { get; set; }
     public string? Description { get; set; }
-    public string? CoverImageUrl { get; set; }
+    public string CoverImageUrl { get; set; } = null!;
 }
