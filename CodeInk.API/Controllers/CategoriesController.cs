@@ -1,5 +1,6 @@
 ﻿using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
+using CodeInk.Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;
@@ -17,15 +18,16 @@ public class CategoriesController : APIBaseController
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
     {
-        var categories = await _categoryRepo.GetAllAsync();
-        return Ok(categories);
+        var categorySpec = new BaseSpecification<Category>();
+        return Ok(await _categoryRepo.GetAllWithSpecAsync(categorySpec));
     }
 
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Category>> GetCategoryById(int id)
     {
-        var category = await _categoryRepo.GetByIdAsync(id);
-        return category;
+
+        var categorySpec = new CategoryWithBooksSpecification(id);
+        return Ok(await _categoryRepo.GetByIdWithSpecAsync(categorySpec));
     }
 }
