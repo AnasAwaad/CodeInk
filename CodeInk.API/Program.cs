@@ -1,4 +1,6 @@
 
+using CodeInk.Core.Repositories;
+using CodeInk.Repository;
 using CodeInk.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +25,8 @@ public class Program
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+
+        builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         #endregion
 

@@ -60,7 +60,7 @@ namespace CodeInk.Repository.Data.Migrations
                     b.HasIndex("ISBN")
                         .IsUnique();
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.BookCategory", b =>
@@ -75,7 +75,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BookCategories");
+                    b.ToTable("BookCategories", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.Category", b =>
@@ -93,7 +93,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.BookCategory", b =>
