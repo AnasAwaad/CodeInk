@@ -1,6 +1,6 @@
 ﻿namespace CodeInk.API.DTOs;
 
-public class BookToReturnDto
+public class BookSummaryDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
