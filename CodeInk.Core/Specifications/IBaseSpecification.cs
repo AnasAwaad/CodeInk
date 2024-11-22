@@ -6,4 +6,5 @@ public interface IBaseSpecification<T> where T : BaseEntity
 {
     public Expression<Func<T, bool>> Criteria { get; set; }
     public IList<Expression<Func<T, object>>> Includes { get; set; }
+    public IList<string> IncludeStrings { get; set; }
 }

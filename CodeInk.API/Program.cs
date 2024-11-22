@@ -1,4 +1,5 @@
 
+using CodeInk.API.Helpers;
 using CodeInk.Core.Repositories;
 using CodeInk.Repository;
 using CodeInk.Repository.Data;
@@ -28,6 +29,7 @@ public class Program
 
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+        builder.Services.AddAutoMapper(typeof(MappingProfiles));
         #endregion
 
         var app = builder.Build();

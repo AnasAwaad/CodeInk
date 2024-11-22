@@ -1,4 +1,6 @@
-﻿using CodeInk.Core.Entities;
+﻿using AutoMapper;
+using CodeInk.API.DTOs;
+using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
@@ -9,17 +11,22 @@ public class CategoriesController : APIBaseController
 {
 
     private readonly IGenericRepository<Category> _categoryRepo;
+    private readonly IMapper _mapper;
 
-    public CategoriesController(IGenericRepository<Category> categoryRepo)
+    public CategoriesController(IGenericRepository<Category> categoryRepo, IMapper mapper)
     {
         _categoryRepo = categoryRepo;
+        _mapper = mapper;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+    public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetCategories()
     {
-        var categorySpec = new BaseSpecification<Category>();
-        return Ok(await _categoryRepo.GetAllWithSpecAsync(categorySpec));
+        var categorySpec = new CategoryWithBooksSpecification();
+        var categories = await _categoryRepo.GetAllWithSpecAsync(categorySpec);
+        var mappedCategories = _mapper.Map<IEnumerable<CategoryToReturnDto>>(categories);
+
+        return Ok(mappedCategories);
     }
 
 
@@ -28,6 +35,9 @@ public class CategoriesController : APIBaseController
     {
 
         var categorySpec = new CategoryWithBooksSpecification(id);
-        return Ok(await _categoryRepo.GetByIdWithSpecAsync(categorySpec));
+        var category = await _categoryRepo.GetByIdWithSpecAsync(categorySpec);
+        var mappedCategory = _mapper.Map<CategoryToReturnDto>(category);
+
+        return Ok(mappedCategory);
     }
 }
