@@ -21,6 +21,7 @@ public class ApiResponse
             400 => "Bad Request",
             401 => "You Are Not Authorized",
             500 => "Internal Server Error",
+            201 => "Created Successfully",
             _ => null,
         };
 

@@ -47,10 +47,18 @@ public class CategoriesController : APIBaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<string>> AddCategory(AddCategoryDto category)
+    public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
+        var spec = new CategoryByNameSpecification(category.Name);
+        var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
+        if (isCategoryExists)
+        {
+            return BadRequest(new ApiResponse(400, "Category name must be unique."));
+        }
+
         var mappedCategory = _mapper.Map<Category>(category);
-        await _categoryRepo.AddAsync(mappedCategory);
-        return Ok("Created Successfully");
+        await _categoryRepo.CreateAsync(mappedCategory);
+
+        return CreatedAtAction(nameof(GetCategoryById), new { Id = mappedCategory.Id }, new ApiResponse(201));
     }
 }

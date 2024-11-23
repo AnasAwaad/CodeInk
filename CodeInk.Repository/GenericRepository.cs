@@ -18,7 +18,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     public async Task<IEnumerable<T>> GetAllAsync() => await _dbContext.Set<T>().ToListAsync();
     public async Task<T> GetByIdAsync(int id) => await _dbContext.Set<T>().FindAsync(id);
 
-    public async Task AddAsync(T entity)
+    public async Task CreateAsync(T entity)
     {
         await _dbContext.Set<T>().AddAsync(entity);
         await _dbContext.SaveChangesAsync();
@@ -34,6 +34,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     public async Task<T> GetByIdWithSpecAsync(IBaseSpecification<T> spec)
     {
         return await ApplySpecification(spec).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> IsExistsWithSpecAsync(IBaseSpecification<T> spec)
+    {
+        return await ApplySpecification(spec).AnyAsync();
     }
 
 
