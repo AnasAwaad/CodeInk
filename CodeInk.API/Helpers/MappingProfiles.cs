@@ -17,6 +17,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.CoverImageUrl, opt => opt.MapFrom<BookPictureUrlResolver>());
 
         CreateMap<Category, BookCategoriesDto>();
+        CreateMap<UpdateCategoryDto, Category>();
         CreateMap<AddCategoryDto, Category>();
 
         CreateMap<Category, CategoryToReturnDto>()

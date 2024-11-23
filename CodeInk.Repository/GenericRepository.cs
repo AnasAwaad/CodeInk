@@ -23,8 +23,15 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         await _dbContext.Set<T>().AddAsync(entity);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task UpdateAsync(T entity)
+    {
+        _dbContext.Set<T>().Update(entity);
+        await _dbContext.SaveChangesAsync();
+    }
     #endregion
 
+    #region Specification
     public async Task<IEnumerable<T>> GetAllWithSpecAsync(IBaseSpecification<T> spec)
     {
         return await ApplySpecification(spec).ToListAsync();
@@ -46,6 +53,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         return SpecificationEvalutor.GetQuery(spec, _dbContext.Set<T>());
     }
+    #endregion
+
 
 
 }

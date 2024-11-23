@@ -61,4 +61,32 @@ public class CategoriesController : APIBaseController
 
         return CreatedAtAction(nameof(GetCategoryById), new { Id = mappedCategory.Id }, new ApiResponse(201));
     }
+
+
+    [HttpPut]
+    public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
+    {
+        //var category =await _categoryRepo.GetByIdAsync(category.Id);
+        var spec = new CategoryByIdSpecification(category.Id);
+
+        var oldCategory = await _categoryRepo.GetByIdWithSpecAsync(spec);
+
+        var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
+
+        if (!isCategoryExists)
+            return NotFound(new ApiResponse(404, "Category Not Found."));
+
+        var nameSpec = new CategoryByNameSpecification(category.Name);
+        var existingCategory = await _categoryRepo.IsExistsWithSpecAsync(nameSpec);
+
+        if (existingCategory && oldCategory.Name != category.Name)
+        {
+            return BadRequest(new ApiResponse(400, "Category name must be unique."));
+        }
+
+        _mapper.Map(category, oldCategory);
+
+        await _categoryRepo.UpdateAsync(oldCategory);
+        return Ok(new ApiResponse(201, "Category Updated Successfully."));
+    }
 }
