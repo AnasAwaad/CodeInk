@@ -1,6 +1,7 @@
 
 using CodeInk.API.Errors;
 using CodeInk.API.Helpers;
+using CodeInk.API.Middlewares;
 using CodeInk.Core.Repositories;
 using CodeInk.Repository;
 using CodeInk.Repository.Data;
@@ -89,6 +90,7 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
+            app.UseMiddleware<ExceptionMiddleWare>();
             app.UseSwagger();
             app.UseSwaggerUI();
         }
