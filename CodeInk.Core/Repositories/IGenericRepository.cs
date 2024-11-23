@@ -8,6 +8,7 @@ public interface IGenericRepository<T> where T : BaseEntity
     #region Without Sepcification
     Task<IEnumerable<T>> GetAllAsync();
     Task<T> GetByIdAsync(int id);
+    Task AddAsync(T entity);
     #endregion
 
     #region Specification

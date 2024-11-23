@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CodeInk.API.DTOs;
+using CodeInk.API.Errors;
 using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Specifications;
@@ -31,13 +32,25 @@ public class CategoriesController : APIBaseController
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Category>> GetCategoryById(int id)
+    public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
     {
 
         var categorySpec = new CategoryWithBooksSpecification(id);
         var category = await _categoryRepo.GetByIdWithSpecAsync(categorySpec);
+
+        if (category is null)
+            return NotFound(new ApiResponse(404));
+
         var mappedCategory = _mapper.Map<CategoryToReturnDto>(category);
 
         return Ok(mappedCategory);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<string>> AddCategory(AddCategoryDto category)
+    {
+        var mappedCategory = _mapper.Map<Category>(category);
+        await _categoryRepo.AddAsync(mappedCategory);
+        return Ok("Created Successfully");
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CodeInk.API.DTOs;
+using CodeInk.API.Errors;
 using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Specifications;
@@ -36,6 +37,10 @@ public class BooksController : APIBaseController
 
         var bookSpec = new BookWithCategoriesSpecification(id);
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
+
+        if (book is null)
+            return NotFound(new ApiResponse(404));
+
         var mappedBook = _mapper.Map<BookDetailDto>(book);
 
         return Ok(mappedBook);
