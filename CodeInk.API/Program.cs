@@ -1,8 +1,10 @@
 
+using CodeInk.API.Errors;
 using CodeInk.API.Helpers;
 using CodeInk.Core.Repositories;
 using CodeInk.Repository;
 using CodeInk.Repository.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeInk.API;
@@ -30,6 +32,28 @@ public class Program
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
+        builder.Services.Configure<ApiBehaviorOptions>(options =>
+        {
+
+            // override this default behavior
+            options.InvalidModelStateResponseFactory = (actionContext) =>
+            {
+                var errors = actionContext.ModelState.Where(P => P.Value?.Errors.Count > 0)
+                                                     .SelectMany(P => P.Value!.Errors.Select(e => e.ErrorMessage))
+                                                     .ToList();
+
+                var apiValidationError = new ApiValidationErrorResponse()
+                {
+                    Errors = errors
+                };
+
+                return new BadRequestObjectResult(apiValidationError);
+            };
+
+        });
+
+
         #endregion
 
         var app = builder.Build();
