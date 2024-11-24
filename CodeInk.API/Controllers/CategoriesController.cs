@@ -66,7 +66,7 @@ public class CategoriesController : APIBaseController
     [HttpPut]
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
-        //var category =await _categoryRepo.GetByIdAsync(category.Id);
+
         var spec = new CategoryByIdSpecification(category.Id);
 
         var oldCategory = await _categoryRepo.GetByIdWithSpecAsync(spec);
@@ -87,6 +87,22 @@ public class CategoriesController : APIBaseController
         _mapper.Map(category, oldCategory);
 
         await _categoryRepo.UpdateAsync(oldCategory);
-        return Ok(new ApiResponse(201, "Category Updated Successfully."));
+        return Ok(new ApiResponse(200, "Category Updated Successfully."));
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
+    {
+        var spec = new CategoryByIdSpecification(id);
+
+        var category = await _categoryRepo.GetByIdWithSpecAsync(spec);
+
+        if (category is null)
+            return NotFound(new ApiResponse(404, "Category Not Found."));
+
+        await _categoryRepo.DeleteAsync(category);
+
+        return Ok(new ApiResponse(200, "Category deleted successfully."));
     }
 }

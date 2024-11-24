@@ -8,7 +8,7 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-
+        CreateMap<CreateBookDto, Book>();
         CreateMap<Book, BookSummaryDto>()
             .ForMember(dest => dest.CoverImageUrl, opt => opt.MapFrom<BookPictureUrlResolver>());
 

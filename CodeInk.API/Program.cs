@@ -3,8 +3,10 @@ using CodeInk.API.Errors;
 using CodeInk.API.Helpers;
 using CodeInk.API.Middlewares;
 using CodeInk.Core.Repositories;
+using CodeInk.Core.Service;
 using CodeInk.Repository;
 using CodeInk.Repository.Data;
+using CodeInk.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +33,8 @@ public class Program
         });
 
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        builder.Services.AddScoped<IFileService, FileService>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         builder.Services.AddAutoMapper(typeof(MappingProfiles));
 

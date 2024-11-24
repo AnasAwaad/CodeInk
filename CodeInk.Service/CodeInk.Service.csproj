@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CodeInk.Repository\CodeInk.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

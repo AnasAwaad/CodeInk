@@ -7,27 +7,34 @@ using Microsoft.EntityFrameworkCore;
 namespace CodeInk.Repository;
 public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 {
-    private readonly AppDbContext _dbContext;
+    protected readonly AppDbContext dbContext;
 
     public GenericRepository(AppDbContext dbContext)
     {
-        _dbContext = dbContext;
+        this.dbContext = dbContext;
     }
 
     #region Without Sepcification
-    public async Task<IEnumerable<T>> GetAllAsync() => await _dbContext.Set<T>().ToListAsync();
-    public async Task<T> GetByIdAsync(int id) => await _dbContext.Set<T>().FindAsync(id);
+    public async Task<IEnumerable<T>> GetAllAsync() => await dbContext.Set<T>().ToListAsync();
+    public async Task<T> GetByIdAsync(int id) => await dbContext.Set<T>().FindAsync(id);
 
     public async Task CreateAsync(T entity)
     {
-        await _dbContext.Set<T>().AddAsync(entity);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Set<T>().AddAsync(entity);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(T entity)
     {
-        _dbContext.Set<T>().Update(entity);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Set<T>().Update(entity);
+        await dbContext.SaveChangesAsync();
+    }
+
+
+    public async Task DeleteAsync(T entity)
+    {
+        dbContext.Set<T>().Remove(entity);
+        await dbContext.SaveChangesAsync();
     }
     #endregion
 
@@ -51,7 +58,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     private IQueryable<T> ApplySpecification(IBaseSpecification<T> spec)
     {
-        return SpecificationEvalutor.GetQuery(spec, _dbContext.Set<T>());
+        return SpecificationEvalutor.GetQuery(spec, dbContext.Set<T>());
     }
     #endregion
 

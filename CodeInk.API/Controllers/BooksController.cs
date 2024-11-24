@@ -3,6 +3,7 @@ using CodeInk.API.DTOs;
 using CodeInk.API.Errors;
 using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
+using CodeInk.Core.Service;
 using CodeInk.Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +13,17 @@ public class BooksController : APIBaseController
 {
     private readonly IGenericRepository<Book> _bookRepo;
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _env;
+    private readonly IFileService _fileService;
+    private readonly ICategoryRepository _categoryRepo;
 
-    public BooksController(IGenericRepository<Book> bookRepo, IMapper mapper)
+    public BooksController(IGenericRepository<Book> bookRepo, IMapper mapper, IWebHostEnvironment env, IFileService fileService, ICategoryRepository categoryRepo)
     {
         _bookRepo = bookRepo;
         _mapper = mapper;
+        _env = env;
+        _fileService = fileService;
+        _categoryRepo = categoryRepo;
     }
 
 
@@ -44,5 +51,47 @@ public class BooksController : APIBaseController
         var mappedBook = _mapper.Map<BookDetailDto>(book);
 
         return Ok(mappedBook);
+    }
+
+
+    [HttpPost]
+    public async Task<ActionResult> CreateBook(CreateBookDto bookDto)
+    {
+        if (bookDto.CategoryIds is null || bookDto.CategoryIds.Count == 0)
+            throw new ArgumentException("At least one category must be selected.");
+
+
+        var spec = new BookISBNExistsSpecification(bookDto.ISBN);
+        bool isISBNExists = await _bookRepo.IsExistsWithSpecAsync(spec);
+        if (isISBNExists)
+        {
+            throw new InvalidOperationException("A book with this ISBN already exists.");
+        }
+
+
+        // handle the file upload for book image cover
+        string uploadDirectory = Path.Combine(_env.WebRootPath, "Images", "Books");
+
+        string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, uploadDirectory);
+
+
+        var book = _mapper.Map<Book>(bookDto);
+
+        book.CoverImageUrl = coverImageUrl;
+
+        var categories = await _categoryRepo.GetByIdsAsync(bookDto.CategoryIds);
+
+        foreach (var category in categories)
+        {
+            book.BookCategories.Add(new BookCategory
+            {
+                CategoryId = category.Id
+            });
+        }
+
+
+        await _bookRepo.CreateAsync(book);
+
+        return Ok(new ApiResponse(200, "Book Created Successfully"));
     }
 }
