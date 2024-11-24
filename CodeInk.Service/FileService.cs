@@ -1,46 +1,69 @@
 ﻿using CodeInk.Core.Service;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 
 namespace CodeInk.Service;
 public class FileService : IFileService
 {
+    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
     private readonly long _maxFileSize = 2 * 1024 * 1024;  // 2MB
 
-    public async Task<string> UploadFileAsync(IFormFile file, string folderPath)
+    public FileService(IWebHostEnvironment webHostEnvironment)
     {
-        if (file is null)
-            throw new ArgumentNullException("No File Uploaded");
+        _webHostEnvironment = webHostEnvironment;
+    }
 
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
 
-        // Get file extension and ensure it's allowed
-        string fileExtension = Path.GetExtension(file.FileName);
+    public async Task<string> UploadFileAsync(IFormFile file, string destination)
+    {
 
-        if (!_allowedExtensions.Contains(fileExtension.ToLower()))
-            throw new InvalidOperationException("Invalid file type.");
+        // Validate the file
+        ValidateFile(file);
+
+        // Combine the destination folder with the root path
+        string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, destination);
+
+        // Ensure the directory exists
+        if (!Directory.Exists(uploadPath))
+            Directory.CreateDirectory(uploadPath);
 
         // Create a unique filename
-        string fileName = Guid.NewGuid().ToString() + fileExtension;
+        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
 
-        var filePath = Path.Combine(folderPath, fileName);
+        var filePath = Path.Combine(uploadPath, fileName);
 
         using (var fileStream = new FileStream(filePath, FileMode.Create))
         {
             await file.CopyToAsync(fileStream);
         }
 
-        return Path.Combine("Images", "Books", fileName);
+        return Path.Combine(destination, fileName).Replace("\\", "/");
     }
 
-    public Task DeleteFile(string folderPath)
+    private void ValidateFile(IFormFile file)
     {
-        if (File.Exists(folderPath))
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File is empty.");
+
+        if (file.Length > _maxFileSize)
+            throw new ArgumentException($"File size exceeds the maximum limit of {_maxFileSize / (1024 * 1024)} MB.");
+
+        string fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+        if (!_allowedExtensions.Contains(fileExtension))
+            throw new ArgumentException($"File type '{fileExtension}' is not allowed. Allowed types are: {string.Join(", ", _allowedExtensions)}.");
+    }
+
+    public Task DeleteFile(string filePath)
+    {
+        string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, filePath);
+
+        if (File.Exists(fullPath))
         {
-            File.Delete(folderPath);
+            File.Delete(fullPath);
         }
         return Task.CompletedTask;
     }

@@ -13,15 +13,13 @@ public class BooksController : APIBaseController
 {
     private readonly IGenericRepository<Book> _bookRepo;
     private readonly IMapper _mapper;
-    private readonly IWebHostEnvironment _env;
     private readonly IFileService _fileService;
     private readonly ICategoryRepository _categoryRepo;
 
-    public BooksController(IGenericRepository<Book> bookRepo, IMapper mapper, IWebHostEnvironment env, IFileService fileService, ICategoryRepository categoryRepo)
+    public BooksController(IGenericRepository<Book> bookRepo, IMapper mapper, IFileService fileService, ICategoryRepository categoryRepo)
     {
         _bookRepo = bookRepo;
         _mapper = mapper;
-        _env = env;
         _fileService = fileService;
         _categoryRepo = categoryRepo;
     }
@@ -63,16 +61,14 @@ public class BooksController : APIBaseController
 
         var spec = new BookISBNExistsSpecification(bookDto.ISBN);
         bool isISBNExists = await _bookRepo.IsExistsWithSpecAsync(spec);
+
         if (isISBNExists)
         {
             throw new InvalidOperationException("A book with this ISBN already exists.");
         }
 
 
-        // handle the file upload for book image cover
-        string uploadDirectory = Path.Combine(_env.WebRootPath, "Images", "Books");
-
-        string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, uploadDirectory);
+        string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, "Images/Books");
 
 
         var book = _mapper.Map<Book>(bookDto);

@@ -9,5 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\CodeInk.Repository\CodeInk.Repository.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
 </Project>
