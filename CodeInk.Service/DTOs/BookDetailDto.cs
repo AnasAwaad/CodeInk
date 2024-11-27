@@ -1,6 +1,6 @@
-﻿namespace CodeInk.API.DTOs;
+﻿namespace CodeInk.Application.DTOs;
 
-public class BookSummaryDto
+public class BookDetailDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
@@ -9,4 +9,5 @@ public class BookSummaryDto
     public decimal Price { get; set; }
     public string? Description { get; set; }
     public string CoverImageUrl { get; set; } = null!;
+    public ICollection<BookCategoriesDto> Categories { get; set; }
 }

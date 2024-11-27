@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using CodeInk.Core.Entities;
+using Microsoft.Extensions.Configuration;
 
-namespace CodeInk.API.Helpers;
+namespace CodeInk.Application.Mapping.Resolvers;
 
 public class BookPictureUrlResolver : IValueResolver<Book, object, string>
 {

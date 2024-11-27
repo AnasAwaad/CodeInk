@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using CodeInk.API.DTOs;
+using CodeInk.Application.DTOs;
+using CodeInk.Application.Mapping.Resolvers;
 using CodeInk.Core.Entities;
 
-namespace CodeInk.API.Helpers;
+namespace CodeInk.Application.Mapping;
 
 public class MappingProfiles : Profile
 {

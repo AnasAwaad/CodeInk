@@ -1,10 +1,9 @@
 ﻿using CodeInk.API.Errors;
-using CodeInk.API.Helpers;
+using CodeInk.Application.Mapping;
+using CodeInk.Application.Services.Implementations;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
 using CodeInk.Repository;
-using CodeInk.Repository.Data;
-using CodeInk.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Extensions;
@@ -14,8 +13,9 @@ public static class ApplicationServicesExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection Services)
     {
         Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
         Services.AddScoped<IFileService, FileService>();
-        Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        Services.AddScoped<IBookService, BookService>();
 
         Services.AddAutoMapper(typeof(MappingProfiles));
 

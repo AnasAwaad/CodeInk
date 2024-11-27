@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CodeInk.API.DTOs;
 using CodeInk.API.Errors;
+using CodeInk.Application.DTOs;
 using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Specifications;

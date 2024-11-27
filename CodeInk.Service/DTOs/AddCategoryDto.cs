@@ -1,4 +1,4 @@
-﻿namespace CodeInk.API.DTOs;
+﻿namespace CodeInk.Application.DTOs;
 
 public class AddCategoryDto
 {

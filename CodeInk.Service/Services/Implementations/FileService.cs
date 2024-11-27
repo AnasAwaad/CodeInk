@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 
-namespace CodeInk.Service;
+namespace CodeInk.Application.Services.Implementations;
 public class FileService : IFileService
 {
     private readonly IWebHostEnvironment _webHostEnvironment;

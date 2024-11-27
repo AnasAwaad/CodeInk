@@ -1,6 +1,6 @@
-﻿namespace CodeInk.API.DTOs;
+﻿namespace CodeInk.Application.DTOs;
 
-public class BookCategoriesDto
+public class UpdateCategoryDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = null!;
