@@ -1,13 +1,6 @@
-
-using CodeInk.API.Errors;
-using CodeInk.API.Helpers;
+using CodeInk.API.Extensions;
 using CodeInk.API.Middlewares;
-using CodeInk.Core.Repositories;
-using CodeInk.Core.Service;
-using CodeInk.Repository;
 using CodeInk.Repository.Data;
-using CodeInk.Service;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeInk.API;
@@ -32,31 +25,8 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
 
-        builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-        builder.Services.AddScoped<IFileService, FileService>();
-        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-        builder.Services.AddAutoMapper(typeof(MappingProfiles));
-
-        builder.Services.Configure<ApiBehaviorOptions>(options =>
-        {
-
-            // override this default behavior
-            options.InvalidModelStateResponseFactory = (actionContext) =>
-            {
-                var errors = actionContext.ModelState.Where(P => P.Value?.Errors.Count > 0)
-                                                     .SelectMany(P => P.Value!.Errors.Select(e => e.ErrorMessage))
-                                                     .ToList();
-
-                var apiValidationError = new ApiValidationErrorResponse()
-                {
-                    Errors = errors
-                };
-
-                return new BadRequestObjectResult(apiValidationError);
-            };
-
-        });
+        builder.Services.AddApplicationServices();
 
 
         #endregion
