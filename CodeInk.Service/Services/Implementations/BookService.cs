@@ -22,47 +22,54 @@ public class BookService : IBookService
         _categoryRepo = categoryRepo;
     }
 
-    public async Task<IEnumerable<BookDetailDto>> GetBooksAsync()
+    public async Task<ApiResponse> GetBooksAsync()
     {
         var bookSpec = new BookWithCategoriesSpecification();
         var books = await _bookRepo.GetAllWithSpecAsync(bookSpec);
 
-        return _mapper.Map<IEnumerable<BookDetailDto>>(books);
+        var mappedBooks = _mapper.Map<IEnumerable<BookDetailDto>>(books);
+
+        return new ApiResponse(200, "Books retrieved successfully.", mappedBooks);
+
     }
 
-    public async Task<BookDetailDto> GetBookByIdAsync(int id)
+    public async Task<ApiResponse> GetBookByIdAsync(int id)
     {
         var bookSpec = new BookWithCategoriesSpecification(id);
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
 
         if (book is null)
-            throw new KeyNotFoundException("Book Not Found.");
+            return new ApiResponse(404, $"Book with Id {id} Not Found");
 
-        return _mapper.Map<BookDetailDto>(book);
+        var mappedBook = _mapper.Map<BookDetailDto>(book);
+
+        return new ApiResponse(200, "Books retrived successfully", mappedBook);
     }
 
-    public async Task CreateBookAsync(CreateBookDto bookDto)
+    public async Task<ApiResponse> CreateBookAsync(CreateBookDto bookDto)
     {
-        // Validate input (ensure categories are selected)
-        ValidateBookDto(bookDto);
+        var validateResult = ValidateBookDto(bookDto);
 
-        // Check if the ISBN already exists
+        if (!validateResult.isValid)
+            return new ApiResponse(400, validateResult.errorMessage);
+
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
         if (isISBNExists)
-            throw new InvalidOperationException("A book with this ISBN already exists.");
+            return new ApiResponse(400, "A book with this ISBN already exists.");
 
         // Upload the cover image and get the URL
         string coverImageUrl = await UploadCoverImageAsync(bookDto.CoverImage);
 
-        // Map DTO to Book entity
+
         var book = _mapper.Map<Book>(bookDto);
         book.CoverImageUrl = coverImageUrl;
 
-        // Add categories to the book
+
         await AddCategoriesToBookAsync(bookDto.CategoryIds, book);
 
-        // Save the book to the repository
         await _bookRepo.CreateAsync(book);
+
+        return new ApiResponse(201, "Book created successfully");
     }
 
     private async Task<bool> CheckIfISBNExistsAsync(string isbn)
@@ -92,9 +99,10 @@ public class BookService : IBookService
         }
     }
 
-    private void ValidateBookDto(CreateBookDto bookDto)
+    private (bool isValid, string errorMessage) ValidateBookDto(CreateBookDto bookDto)
     {
         if (bookDto.CategoryIds == null || !bookDto.CategoryIds.Any())
-            throw new ArgumentException("At least one category must be selected.");
+            return (false, "At least one category must be selected.");
+        return (true, string.Empty);
     }
 }

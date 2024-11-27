@@ -3,7 +3,7 @@
 namespace CodeInk.Core.Service;
 public interface IBookService
 {
-    public Task<IEnumerable<BookDetailDto>> GetBooksAsync();
-    public Task<BookDetailDto> GetBookByIdAsync(int id);
-    public Task CreateBookAsync(CreateBookDto bookDto);
+    public Task<ApiResponse> GetBooksAsync();
+    public Task<ApiResponse> GetBookByIdAsync(int id);
+    public Task<ApiResponse> CreateBookAsync(CreateBookDto bookDto);
 }

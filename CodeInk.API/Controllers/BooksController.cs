@@ -1,5 +1,4 @@
-﻿using CodeInk.API.Errors;
-using CodeInk.Application.DTOs;
+﻿using CodeInk.Application.DTOs;
 using CodeInk.Core.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,33 +17,24 @@ public class BooksController : APIBaseController
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDetailDto>>> GetBooks()
     {
-        var books = await _bookService.GetBooksAsync();
+        var response = await _bookService.GetBooksAsync();
 
-        return Ok(books);
+        return StatusCode(response.StatusCode, response);
     }
 
 
     [HttpGet("{id}")]
     public async Task<ActionResult<BookDetailDto>> GetBookById(int id)
     {
-
-        try
-        {
-            var book = await _bookService.GetBookByIdAsync(id);
-            return Ok(book);
-        }
-        catch (KeyNotFoundException)
-        {
-
-            return NotFound(new ApiResponse(404, "Book Not Found."));
-        }
+        var response = await _bookService.GetBookByIdAsync(id);
+        return StatusCode(response.StatusCode, response);
     }
 
 
     [HttpPost]
     public async Task<ActionResult> CreateBook(CreateBookDto bookDto)
     {
-        await _bookService.CreateBookAsync(bookDto);
-        return Ok(new ApiResponse(200, "Book Created Successfully"));
+        var response = await _bookService.CreateBookAsync(bookDto);
+        return StatusCode(response.StatusCode, response);
     }
 }
