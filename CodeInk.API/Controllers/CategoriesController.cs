@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using CodeInk.API.Errors;
+﻿using CodeInk.API.Errors;
 using CodeInk.Application.DTOs;
-using CodeInk.Core.Entities;
-using CodeInk.Core.Repositories;
-using CodeInk.Core.Specifications;
+using CodeInk.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;
@@ -11,23 +8,20 @@ namespace CodeInk.API.Controllers;
 public class CategoriesController : APIBaseController
 {
 
-    private readonly IGenericRepository<Category> _categoryRepo;
-    private readonly IMapper _mapper;
+    private readonly ICategoryService _categoryService;
 
-    public CategoriesController(IGenericRepository<Category> categoryRepo, IMapper mapper)
+    public CategoriesController(ICategoryService categoryService)
     {
-        _categoryRepo = categoryRepo;
-        _mapper = mapper;
+        _categoryService = categoryService;
     }
+
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetCategories()
     {
-        var categorySpec = new CategoryWithBooksSpecification();
-        var categories = await _categoryRepo.GetAllWithSpecAsync(categorySpec);
-        var mappedCategories = _mapper.Map<IEnumerable<CategoryToReturnDto>>(categories);
+        var categories = await _categoryService.GetCategoriesAsync();
 
-        return Ok(mappedCategories);
+        return Ok(categories);
     }
 
 
@@ -35,31 +29,29 @@ public class CategoriesController : APIBaseController
     public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
     {
 
-        var categorySpec = new CategoryWithBooksSpecification(id);
-        var category = await _categoryRepo.GetByIdWithSpecAsync(categorySpec);
-
-        if (category is null)
-            return NotFound(new ApiResponse(404));
-
-        var mappedCategory = _mapper.Map<CategoryToReturnDto>(category);
-
-        return Ok(mappedCategory);
+        try
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+            return Ok(category);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ApiResponse(404, ex.Message));
+        }
     }
 
     [HttpPost]
     public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
-        var spec = new CategoryByNameSpecification(category.Name);
-        var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
-        if (isCategoryExists)
+        try
         {
-            return BadRequest(new ApiResponse(400, "Category name must be unique."));
+            await _categoryService.CreateCategoryAsync(category);
+            return Ok(new ApiResponse(201));
         }
-
-        var mappedCategory = _mapper.Map<Category>(category);
-        await _categoryRepo.CreateAsync(mappedCategory);
-
-        return CreatedAtAction(nameof(GetCategoryById), new { Id = mappedCategory.Id }, new ApiResponse(201));
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiResponse(400, ex.Message));
+        }
     }
 
 
@@ -67,42 +59,33 @@ public class CategoriesController : APIBaseController
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
 
-        var spec = new CategoryByIdSpecification(category.Id);
-
-        var oldCategory = await _categoryRepo.GetByIdWithSpecAsync(spec);
-
-        var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
-
-        if (!isCategoryExists)
-            return NotFound(new ApiResponse(404, "Category Not Found."));
-
-        var nameSpec = new CategoryByNameSpecification(category.Name);
-        var existingCategory = await _categoryRepo.IsExistsWithSpecAsync(nameSpec);
-
-        if (existingCategory && oldCategory.Name != category.Name)
+        try
         {
-            return BadRequest(new ApiResponse(400, "Category name must be unique."));
+            await _categoryService.UpdateCategoryAsync(category);
+            return Ok(new ApiResponse(200, "Category Updated Successfully."));
         }
+        catch (Exception ex)
+        {
+            if (ex.GetType() == typeof(InvalidOperationException))
+                return BadRequest(new ApiResponse(400, ex.Message));
 
-        _mapper.Map(category, oldCategory);
-
-        await _categoryRepo.UpdateAsync(oldCategory);
-        return Ok(new ApiResponse(200, "Category Updated Successfully."));
+            return NotFound(new ApiResponse(404, ex.Message));
+        }
     }
 
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
     {
-        var spec = new CategoryByIdSpecification(id);
+        try
+        {
+            await _categoryService.RemoveCategoryAsync(id);
+            return Ok(new ApiResponse(200, "Category deleted successfully."));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ApiResponse(404, ex.Message));
+        }
 
-        var category = await _categoryRepo.GetByIdWithSpecAsync(spec);
-
-        if (category is null)
-            return NotFound(new ApiResponse(404, "Category Not Found."));
-
-        await _categoryRepo.DeleteAsync(category);
-
-        return Ok(new ApiResponse(200, "Category deleted successfully."));
     }
 }

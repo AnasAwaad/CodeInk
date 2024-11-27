@@ -1,6 +1,7 @@
 ﻿using CodeInk.API.Errors;
 using CodeInk.Application.Mapping;
 using CodeInk.Application.Services.Implementations;
+using CodeInk.Application.Services.Interfaces;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
 using CodeInk.Repository;
@@ -16,6 +17,7 @@ public static class ApplicationServicesExtension
 
         Services.AddScoped<IFileService, FileService>();
         Services.AddScoped<IBookService, BookService>();
+        Services.AddScoped<ICategoryService, CategoryService>();
 
         Services.AddAutoMapper(typeof(MappingProfiles));
 
