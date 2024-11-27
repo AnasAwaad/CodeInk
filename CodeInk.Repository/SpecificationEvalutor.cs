@@ -9,9 +9,13 @@ public static class SpecificationEvalutor
     {
         // Apply criteria
         if (specification.Criteria is not null)
-        {
             query = query.Where(specification.Criteria);
-        }
+
+        if (specification.OrderBy is not null)
+            query = query.OrderBy(specification.OrderBy);
+
+        if (specification.OrderByDesc is not null)
+            query = query.OrderByDescending(specification.OrderByDesc);
 
         // Apply includes
         query = specification.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));

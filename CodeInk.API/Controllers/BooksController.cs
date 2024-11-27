@@ -15,9 +15,9 @@ public class BooksController : APIBaseController
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDetailDto>>> GetBooks()
+    public async Task<ActionResult<IEnumerable<BookDetailDto>>> GetBooks(string? OrderBy)
     {
-        var response = await _bookService.GetBooksAsync();
+        var response = await _bookService.GetBooksAsync(OrderBy);
 
         return StatusCode(response.StatusCode, response);
     }
