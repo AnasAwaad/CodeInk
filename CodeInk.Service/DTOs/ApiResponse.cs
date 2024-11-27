@@ -1,15 +1,18 @@
 ﻿
-namespace CodeInk.API.Errors;
+namespace CodeInk.Application.DTOs;
 
 public class ApiResponse
 {
+    public bool Success { get; set; }
     public int StatusCode { get; set; }
     public string? Message { get; set; }
-
-    public ApiResponse(int statusCode, string? message = null)
+    public object? Data { get; set; }
+    public ApiResponse(int statusCode, string? message = null, object? data = null)
     {
         StatusCode = statusCode;
         Message = message ?? GetDefaultMessageForStatusCode(statusCode);
+        Data = data;
+        Success = statusCode >= 200 && statusCode < 300;
     }
 
     private string? GetDefaultMessageForStatusCode(int? statusCode)

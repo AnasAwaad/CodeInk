@@ -1,4 +1,4 @@
-﻿using CodeInk.API.Errors;
+﻿using CodeInk.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;

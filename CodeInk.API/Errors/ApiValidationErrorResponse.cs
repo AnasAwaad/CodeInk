@@ -1,4 +1,6 @@
-﻿namespace CodeInk.API.Errors;
+﻿using CodeInk.Application.DTOs;
+
+namespace CodeInk.API.Errors;
 
 public class ApiValidationErrorResponse : ApiResponse
 {

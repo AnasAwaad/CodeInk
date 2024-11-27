@@ -17,19 +17,21 @@ public class CategoryService : ICategoryService
         _mapper = mapper;
     }
 
-    public async Task CreateCategoryAsync(AddCategoryDto categoryDto)
+    public async Task<ApiResponse> CreateCategoryAsync(AddCategoryDto categoryDto)
     {
         var spec = new CategoryByNameSpecification(categoryDto.Name);
         var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
 
         if (isCategoryExists)
-            throw new InvalidOperationException("Category name must be unique.");
+            return new ApiResponse(409, $"Category with the name '{categoryDto.Name}' already exists.");
 
         var mappedCategory = _mapper.Map<Category>(categoryDto);
         await _categoryRepo.CreateAsync(mappedCategory);
+
+        return new ApiResponse(201, "Category created successfully");
     }
 
-    public async Task<IEnumerable<CategoryToReturnDto>> GetCategoriesAsync()
+    public async Task<ApiResponse> GetCategoriesAsync()
     {
         var categorySpec = new CategoryWithBooksSpecification();
 
@@ -37,33 +39,37 @@ public class CategoryService : ICategoryService
 
         var mappedCategories = _mapper.Map<IEnumerable<CategoryToReturnDto>>(categories);
 
-        return mappedCategories;
+        return new ApiResponse(200, "Categories retrieved successfully.", mappedCategories);
     }
 
-    public async Task<CategoryToReturnDto> GetCategoryByIdAsync(int id)
+    public async Task<ApiResponse> GetCategoryByIdAsync(int id)
     {
         var categorySpec = new CategoryWithBooksSpecification(id);
         var category = await _categoryRepo.GetByIdWithSpecAsync(categorySpec);
 
         if (category is null)
-            throw new KeyNotFoundException("Category Not Found.");
+            return new ApiResponse(404, $"Category with Id {id} Not Found");
 
-        return _mapper.Map<CategoryToReturnDto>(category);
+        var mappedCategory = _mapper.Map<CategoryToReturnDto>(category);
+
+        return new ApiResponse(200, "Categories retrived successfully", mappedCategory);
     }
 
-    public async Task RemoveCategoryAsync(int id)
+    public async Task<ApiResponse> RemoveCategoryAsync(int id)
     {
         var spec = new CategoryByIdSpecification(id);
 
         var category = await _categoryRepo.GetByIdWithSpecAsync(spec);
 
         if (category is null)
-            throw new KeyNotFoundException("Category Not Found.");
+            return new ApiResponse(404, $"Category with Id {id} Not Found");
 
         await _categoryRepo.DeleteAsync(category);
+
+        return new ApiResponse(200, "Category removed successfully");
     }
 
-    public async Task UpdateCategoryAsync(UpdateCategoryDto categoryDto)
+    public async Task<ApiResponse> UpdateCategoryAsync(UpdateCategoryDto categoryDto)
     {
         var spec = new CategoryByIdSpecification(categoryDto.Id);
 
@@ -72,16 +78,18 @@ public class CategoryService : ICategoryService
         var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
 
         if (!isCategoryExists)
-            throw new KeyNotFoundException("Category Not Found.");
+            return new ApiResponse(404, $"Category with ID {categoryDto.Id} not found.");
 
         var nameSpec = new CategoryByNameSpecification(categoryDto.Name);
         var existingCategory = await _categoryRepo.IsExistsWithSpecAsync(nameSpec);
 
         if (existingCategory && category.Name != categoryDto.Name)
-            throw new InvalidOperationException("Category name must be unique.");
+            return new ApiResponse(400, $"Category name '{categoryDto.Name}' must be unique.");
 
         category = _mapper.Map(categoryDto, category);
 
         await _categoryRepo.UpdateAsync(category);
+
+        return new ApiResponse(200, "Category updated Successfully");
     }
 }

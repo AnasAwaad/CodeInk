@@ -3,10 +3,10 @@
 namespace CodeInk.Application.Services.Interfaces;
 public interface ICategoryService
 {
-    Task<IEnumerable<CategoryToReturnDto>> GetCategoriesAsync();
-    Task<CategoryToReturnDto> GetCategoryByIdAsync(int id);
-    Task CreateCategoryAsync(AddCategoryDto categoryDto);
-    Task UpdateCategoryAsync(UpdateCategoryDto categoryDto);
-    Task RemoveCategoryAsync(int id);
+    Task<ApiResponse> GetCategoriesAsync();
+    Task<ApiResponse> GetCategoryByIdAsync(int id);
+    Task<ApiResponse> CreateCategoryAsync(AddCategoryDto categoryDto);
+    Task<ApiResponse> UpdateCategoryAsync(UpdateCategoryDto categoryDto);
+    Task<ApiResponse> RemoveCategoryAsync(int id);
 
 }
