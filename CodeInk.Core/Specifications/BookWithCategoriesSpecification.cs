@@ -5,14 +5,14 @@ public class BookWithCategoriesSpecification : BaseSpecification<Book>
 {
 
     // get all books
-    public BookWithCategoriesSpecification(string? OrderBy) : base()
+    public BookWithCategoriesSpecification(BookSpecParams bookParams) : base()
     {
         Includes.Add(b => b.BookCategories);
         IncludeStrings.Add("BookCategories.Category");
 
-        if (!string.IsNullOrEmpty(OrderBy))
+        if (!string.IsNullOrEmpty(bookParams.OrderBy))
         {
-            switch (OrderBy)
+            switch (bookParams.OrderBy)
             {
                 case "PriceAsc":
                     SetOrderBy(b => b.Price);
@@ -25,6 +25,8 @@ public class BookWithCategoriesSpecification : BaseSpecification<Book>
                     break;
             }
         }
+
+        SetPagination(bookParams.PageSize * (bookParams.PageNumber - 1), bookParams.PageSize);
 
     }
 

@@ -22,9 +22,9 @@ public class BookService : IBookService
         _categoryRepo = categoryRepo;
     }
 
-    public async Task<ApiResponse> GetBooksAsync(string? OrderBy)
+    public async Task<ApiResponse> GetBooksAsync(BookSpecParams bookParams)
     {
-        var bookSpec = new BookWithCategoriesSpecification(OrderBy);
+        var bookSpec = new BookWithCategoriesSpecification(bookParams);
         var books = await _bookRepo.GetAllWithSpecAsync(bookSpec);
 
         var mappedBooks = _mapper.Map<IEnumerable<BookDetailDto>>(books);

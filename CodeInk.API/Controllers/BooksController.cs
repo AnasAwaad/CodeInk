@@ -1,5 +1,6 @@
 ﻿using CodeInk.Application.DTOs;
 using CodeInk.Core.Service;
+using CodeInk.Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;
@@ -15,9 +16,9 @@ public class BooksController : APIBaseController
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDetailDto>>> GetBooks(string? OrderBy)
+    public async Task<ActionResult<IEnumerable<BookDetailDto>>> GetBooks([FromQuery] BookSpecParams bookParams)
     {
-        var response = await _bookService.GetBooksAsync(OrderBy);
+        var response = await _bookService.GetBooksAsync(bookParams);
 
         return StatusCode(response.StatusCode, response);
     }

@@ -17,6 +17,9 @@ public static class SpecificationEvalutor
         if (specification.OrderByDesc is not null)
             query = query.OrderByDescending(specification.OrderByDesc);
 
+        // Apply Pagination
+        query = query.Skip(specification.Skip).Take(specification.Take);
+
         // Apply includes
         query = specification.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
 
