@@ -27,9 +27,14 @@ public class BookService : IBookService
         var bookSpec = new BookWithCategoriesSpecification(bookParams);
         var books = await _bookRepo.GetAllWithSpecAsync(bookSpec);
 
-        var mappedBooks = _mapper.Map<IEnumerable<BookDetailDto>>(books);
+        var mappedBooks = _mapper.Map<IReadOnlyList<BookDetailDto>>(books);
 
-        return new ApiResponse(200, "Books retrieved successfully.", mappedBooks);
+
+        var count = await _bookRepo.CountAllAsync();
+        var totalPages = (int)Math.Ceiling(count * 1.0 / bookParams.PageSize);
+
+        var paginatedBooks = new Pagination<BookDetailDto>(bookParams.PageNumber, bookParams.PageSize, totalPages, count, mappedBooks);
+        return new ApiResponse(200, "Books retrieved successfully.", paginatedBooks);
 
     }
 

@@ -11,11 +11,13 @@ public interface IGenericRepository<T> where T : BaseEntity
     Task CreateAsync(T entity);
     Task UpdateAsync(T entity);
     Task DeleteAsync(T entity);
+    Task<int> CountAllAsync();
     #endregion
 
     #region Specification
     Task<IEnumerable<T>> GetAllWithSpecAsync(IBaseSpecification<T> spec);
     Task<T> GetByIdWithSpecAsync(IBaseSpecification<T> spec);
     Task<bool> IsExistsWithSpecAsync(IBaseSpecification<T> spec);
+    Task<int> CountWithSpecAsync(IBaseSpecification<T> spec);
     #endregion
 }
