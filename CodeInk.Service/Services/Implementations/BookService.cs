@@ -77,6 +77,44 @@ public class BookService : IBookService
         return new ApiResponse(201, "Book created successfully");
     }
 
+    public async Task<ApiResponse> UpdateBookAsync(UpdateBookDto bookDto)
+    {
+        var bookSpec = new BookWithCategoriesSpecification(bookDto.Id);
+        var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
+        if (book is null)
+            return new ApiResponse(404, $"Book with Id {bookDto.Id} not found.");
+
+        bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
+        if (isISBNExists && book.ISBN != bookDto.ISBN)
+            return new ApiResponse(400, "A book with this ISBN already exists.");
+
+        book = _mapper.Map(bookDto, book);
+
+        if (bookDto.CoverImage is not null)
+        {
+            _fileService.DeleteFile(book.CoverImageUrl);
+
+            // Upload the cover image and get the URL
+            string coverImageUrl = await UploadCoverImageAsync(bookDto.CoverImage);
+
+            book.CoverImageUrl = coverImageUrl;
+        }
+
+        // remove old categories for book and then add new categories to book
+        book.BookCategories.Clear();
+        await AddCategoriesToBookAsync(bookDto.CategoryIds, book);
+
+        await _bookRepo.UpdateAsync(book);
+
+        return new ApiResponse(200, "Book updated successfully.");
+    }
+
+
+
+
+
+
+
     private async Task<bool> CheckIfISBNExistsAsync(string isbn)
     {
         var spec = new BookISBNExistsSpecification(isbn);
@@ -95,10 +133,12 @@ public class BookService : IBookService
         var categorySpec = new CategoriesByIdsWithSpecification(categoryIds);
         var categories = await _categoryRepo.GetAllWithSpecAsync(categorySpec);
 
+
         foreach (var category in categories)
         {
             book.BookCategories.Add(new BookCategory
             {
+                BookId = book.Id,
                 CategoryId = category.Id
             });
         }
@@ -110,4 +150,6 @@ public class BookService : IBookService
             return (false, "At least one category must be selected.");
         return (true, string.Empty);
     }
+
+
 }

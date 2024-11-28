@@ -8,7 +8,7 @@ public class BookISBNExistsSpecification : BaseSpecification<Book>
 
     }
 
-    public BookISBNExistsSpecification(string isbn) : base(b => b.ISBN.Equals(isbn))
+    public BookISBNExistsSpecification(string isbn) : base(b => b.ISBN == isbn)
     {
 
     }

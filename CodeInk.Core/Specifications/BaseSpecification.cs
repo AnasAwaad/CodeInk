@@ -11,6 +11,7 @@ public class BaseSpecification<T> : IBaseSpecification<T> where T : BaseEntity
     public Expression<Func<T, object>> OrderByDesc { get; set; }
     public int Skip { get; set; }
     public int Take { get; set; }
+    public bool IsPaginationEnabled { get; set; }
 
 
     // Get All 
@@ -38,6 +39,7 @@ public class BaseSpecification<T> : IBaseSpecification<T> where T : BaseEntity
 
     public void SetPagination(int skip, int take)
     {
+        IsPaginationEnabled = true;
         Skip = skip;
         Take = take;
     }

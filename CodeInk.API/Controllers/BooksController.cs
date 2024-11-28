@@ -38,4 +38,11 @@ public class BooksController : APIBaseController
         var response = await _bookService.CreateBookAsync(bookDto);
         return StatusCode(response.StatusCode, response);
     }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateBook(UpdateBookDto bookDto)
+    {
+        var response = await _bookService.UpdateBookAsync(bookDto);
+        return StatusCode(response.StatusCode, response);
+    }
 }

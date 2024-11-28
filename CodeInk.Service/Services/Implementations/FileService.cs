@@ -57,14 +57,21 @@ public class FileService : IFileService
             throw new ArgumentException($"File type '{fileExtension}' is not allowed. Allowed types are: {string.Join(", ", _allowedExtensions)}.");
     }
 
-    public Task DeleteFile(string filePath)
+    public void DeleteFile(string filePath)
     {
         string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, filePath);
 
+        fullPath = fullPath.Replace("\\", "/");
         if (File.Exists(fullPath))
         {
-            File.Delete(fullPath);
+            try
+            {
+                File.Delete(fullPath);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Could not delete the file.", ex);
+            }
         }
-        return Task.CompletedTask;
     }
 }
