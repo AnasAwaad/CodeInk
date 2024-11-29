@@ -1,4 +1,6 @@
-﻿namespace CodeInk.Application.DTOs;
+﻿using CodeInk.Application.DTOs.Book;
+
+namespace CodeInk.Application.DTOs.Category;
 
 public class CategoryToReturnDto
 {

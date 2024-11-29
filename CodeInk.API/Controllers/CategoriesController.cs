@@ -1,4 +1,5 @@
 ﻿using CodeInk.Application.DTOs;
+using CodeInk.Application.DTOs.Category;
 using CodeInk.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,38 +19,47 @@ public class CategoriesController : APIBaseController
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetCategories()
     {
-        var response = await _categoryService.GetCategoriesAsync();
-        return StatusCode(response.StatusCode, response);
+        var data = await _categoryService.GetCategoriesAsync();
+
+        return Ok(new ApiResponse(200, "Categories retrived successfully", data));
     }
 
 
     [HttpGet("{id}")]
     public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
     {
-        var response = await _categoryService.GetCategoryByIdAsync(id);
-        return StatusCode(response.StatusCode, response);
+        var data = await _categoryService.GetCategoryByIdAsync(id);
+
+        return data is null ? NotFound(new ApiResponse(404, $"Category with Id {id} Not Found"))
+                              : Ok(new ApiResponse(200, "Categories retrived successfully", data));
     }
 
     [HttpPost]
     public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
-        var response = await _categoryService.CreateCategoryAsync(category);
-        return StatusCode(response.StatusCode, response);
+        var result = await _categoryService.CreateCategoryAsync(category);
+
+        return result.success ? Ok(new ApiResponse(201, result.message))
+                              : BadRequest(new ApiResponse(300, result.message));
     }
 
 
     [HttpPut]
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
-        var response = await _categoryService.UpdateCategoryAsync(category);
-        return StatusCode(response.StatusCode, response);
+        var result = await _categoryService.UpdateCategoryAsync(category);
+
+        return result.success ? Ok(new ApiResponse(201, result.message))
+                              : BadRequest(new ApiResponse(300, result.message));
     }
 
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
     {
-        var response = await _categoryService.RemoveCategoryAsync(id);
-        return StatusCode(response.StatusCode, response);
+        var result = await _categoryService.RemoveCategoryAsync(id);
+
+        return result.success ? Ok(new ApiResponse(201, result.message))
+                              : BadRequest(new ApiResponse(300, result.message));
     }
 }

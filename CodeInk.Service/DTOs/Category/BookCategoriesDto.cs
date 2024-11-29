@@ -1,4 +1,4 @@
-﻿namespace CodeInk.Application.DTOs;
+﻿namespace CodeInk.Application.DTOs.Category;
 
 public class BookCategoriesDto
 {

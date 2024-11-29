@@ -1,4 +1,5 @@
 ﻿using CodeInk.Application.DTOs;
+using CodeInk.Application.DTOs.Book;
 using CodeInk.Core.Service;
 using CodeInk.Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
@@ -16,33 +17,39 @@ public class BooksController : APIBaseController
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDetailDto>>> GetBooks([FromQuery] BookSpecParams bookParams)
+    public async Task<IActionResult> GetBooks([FromQuery] BookSpecParams bookParams)
     {
-        var response = await _bookService.GetBooksAsync(bookParams);
+        var data = await _bookService.GetBooksAsync(bookParams);
 
-        return StatusCode(response.StatusCode, response);
+        return Ok(new ApiResponse(200, "Books retrived successfully", data));
     }
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<BookDetailDto>> GetBookById(int id)
+    public async Task<IActionResult> GetBookById(int id)
     {
-        var response = await _bookService.GetBookByIdAsync(id);
-        return StatusCode(response.StatusCode, response);
+        var data = await _bookService.GetBookByIdAsync(id);
+
+        return data is null ? NotFound(new ApiResponse(404, $"Book with Id {id} Not Found"))
+                              : Ok(new ApiResponse(200, "Book retrived successfully", data));
     }
 
 
     [HttpPost]
     public async Task<ActionResult> CreateBook(CreateBookDto bookDto)
     {
-        var response = await _bookService.CreateBookAsync(bookDto);
-        return StatusCode(response.StatusCode, response);
+        var result = await _bookService.CreateBookAsync(bookDto);
+
+        return result.success ? Ok(new ApiResponse(201, result.message))
+                              : BadRequest(new ApiResponse(300, result.message));
     }
 
     [HttpPut]
     public async Task<ActionResult> UpdateBook(UpdateBookDto bookDto)
     {
-        var response = await _bookService.UpdateBookAsync(bookDto);
-        return StatusCode(response.StatusCode, response);
+        var result = await _bookService.UpdateBookAsync(bookDto);
+
+        return result.success ? Ok(new ApiResponse(201, result.message))
+                              : BadRequest(new ApiResponse(300, result.message));
     }
 }

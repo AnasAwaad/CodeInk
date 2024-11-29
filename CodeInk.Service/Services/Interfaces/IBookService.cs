@@ -1,11 +1,12 @@
 ﻿using CodeInk.Application.DTOs;
+using CodeInk.Application.DTOs.Book;
 using CodeInk.Core.Specifications;
 
 namespace CodeInk.Core.Service;
 public interface IBookService
 {
-    public Task<ApiResponse> GetBooksAsync(BookSpecParams bookParams);
-    public Task<ApiResponse> GetBookByIdAsync(int id);
-    public Task<ApiResponse> CreateBookAsync(CreateBookDto bookDto);
-    public Task<ApiResponse> UpdateBookAsync(UpdateBookDto bookDto);
+    public Task<Pagination<BookDetailDto>> GetBooksAsync(BookSpecParams bookParams);
+    public Task<BookDetailDto?> GetBookByIdAsync(int id);
+    public Task<ServiceResponse> CreateBookAsync(CreateBookDto bookDto);
+    public Task<ServiceResponse> UpdateBookAsync(UpdateBookDto bookDto);
 }

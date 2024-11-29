@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using CodeInk.Application.DTOs;
+using CodeInk.Application.DTOs.Book;
+using CodeInk.Application.DTOs.Category;
 using CodeInk.Application.Mapping.Resolvers;
 using CodeInk.Core.Entities;
 

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using CodeInk.Application.DTOs;
+using CodeInk.Application.DTOs.Book;
 using CodeInk.Core.Entities;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
 using CodeInk.Core.Specifications;
-using Microsoft.AspNetCore.Http;
 
 namespace CodeInk.Application.Services.Implementations;
 public class BookService : IBookService
@@ -22,7 +22,7 @@ public class BookService : IBookService
         _categoryRepo = categoryRepo;
     }
 
-    public async Task<ApiResponse> GetBooksAsync(BookSpecParams bookParams)
+    public async Task<Pagination<BookDetailDto>> GetBooksAsync(BookSpecParams bookParams)
     {
         var bookSpec = new BookWithCategoriesSpecification(bookParams);
         var books = await _bookRepo.GetAllWithSpecAsync(bookSpec);
@@ -33,37 +33,35 @@ public class BookService : IBookService
         var count = await _bookRepo.CountAllAsync();
         var totalPages = (int)Math.Ceiling(count * 1.0 / bookParams.PageSize);
 
-        var paginatedBooks = new Pagination<BookDetailDto>(bookParams.PageNumber, bookParams.PageSize, totalPages, count, mappedBooks);
-        return new ApiResponse(200, "Books retrieved successfully.", paginatedBooks);
 
+        return new Pagination<BookDetailDto>
+            (bookParams.PageNumber, bookParams.PageSize, totalPages, count, mappedBooks);
     }
 
-    public async Task<ApiResponse> GetBookByIdAsync(int id)
+    public async Task<BookDetailDto?> GetBookByIdAsync(int id)
     {
         var bookSpec = new BookWithCategoriesSpecification(id);
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
 
         if (book is null)
-            return new ApiResponse(404, $"Book with Id {id} Not Found");
+            return null;
 
-        var mappedBook = _mapper.Map<BookDetailDto>(book);
-
-        return new ApiResponse(200, "Books retrived successfully", mappedBook);
+        return _mapper.Map<BookDetailDto>(book);
     }
 
-    public async Task<ApiResponse> CreateBookAsync(CreateBookDto bookDto)
+    public async Task<ServiceResponse> CreateBookAsync(CreateBookDto bookDto)
     {
         var validateResult = ValidateBookDto(bookDto);
 
         if (!validateResult.isValid)
-            return new ApiResponse(400, validateResult.errorMessage);
+            return new ServiceResponse(false, validateResult.errorMessage);
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
         if (isISBNExists)
-            return new ApiResponse(400, "A book with this ISBN already exists.");
+            return new ServiceResponse(false, "A book with this ISBN already exists.");
 
         // Upload the cover image and get the URL
-        string coverImageUrl = await UploadCoverImageAsync(bookDto.CoverImage);
+        string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, "Images/Books");
 
 
         var book = _mapper.Map<Book>(bookDto);
@@ -74,19 +72,21 @@ public class BookService : IBookService
 
         await _bookRepo.CreateAsync(book);
 
-        return new ApiResponse(201, "Book created successfully");
+        return new ServiceResponse(true, "Book created successfully");
     }
 
-    public async Task<ApiResponse> UpdateBookAsync(UpdateBookDto bookDto)
+    public async Task<ServiceResponse> UpdateBookAsync(UpdateBookDto bookDto)
     {
         var bookSpec = new BookWithCategoriesSpecification(bookDto.Id);
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
+
         if (book is null)
-            return new ApiResponse(404, $"Book with Id {bookDto.Id} not found.");
+            return new ServiceResponse(false, $"Book with Id {bookDto.Id} not found.");
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
+
         if (isISBNExists && book.ISBN != bookDto.ISBN)
-            return new ApiResponse(400, "A book with this ISBN already exists.");
+            return new ServiceResponse(false, "A book with this ISBN already exists.");
 
         book = _mapper.Map(bookDto, book);
 
@@ -95,7 +95,7 @@ public class BookService : IBookService
             _fileService.DeleteFile(book.CoverImageUrl);
 
             // Upload the cover image and get the URL
-            string coverImageUrl = await UploadCoverImageAsync(bookDto.CoverImage);
+            string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, "Images/Books");
 
             book.CoverImageUrl = coverImageUrl;
         }
@@ -106,7 +106,7 @@ public class BookService : IBookService
 
         await _bookRepo.UpdateAsync(book);
 
-        return new ApiResponse(200, "Book updated successfully.");
+        return new ServiceResponse(true, "Book updated successfully.");
     }
 
 
@@ -119,13 +119,6 @@ public class BookService : IBookService
     {
         var spec = new BookISBNExistsSpecification(isbn);
         return await _bookRepo.IsExistsWithSpecAsync(spec);
-    }
-
-    private async Task<string> UploadCoverImageAsync(IFormFile coverImage)
-    {
-        if (coverImage == null)
-            throw new ArgumentNullException(nameof(coverImage), "Cover image must be provided.");
-        return await _fileService.UploadFileAsync(coverImage, "Images/Books");
     }
 
     private async Task AddCategoriesToBookAsync(List<int> categoryIds, Book book)
