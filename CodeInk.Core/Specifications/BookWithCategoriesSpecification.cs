@@ -5,10 +5,12 @@ public class BookWithCategoriesSpecification : BaseSpecification<Book>
 {
 
     // get all books
-    public BookWithCategoriesSpecification(BookSpecParams bookParams) : base()
+    public BookWithCategoriesSpecification(BookSpecParams bookParams) :
+        base(b => (!bookParams.CategoryId.HasValue || b.BookCategories.Any(bc => bc.CategoryId == bookParams.CategoryId)))
     {
         Includes.Add(b => b.BookCategories);
         IncludeStrings.Add("BookCategories.Category");
+
 
         if (!string.IsNullOrEmpty(bookParams.OrderBy))
         {

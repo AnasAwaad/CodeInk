@@ -2,6 +2,7 @@
 public class BookSpecParams
 {
     public string? OrderBy { get; set; }
+    public int? CategoryId { get; set; }
 
     private int pageSize = 12;
     public int PageSize
