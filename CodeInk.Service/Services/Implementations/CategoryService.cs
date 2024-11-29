@@ -24,12 +24,12 @@ public class CategoryService : ICategoryService
         var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
 
         if (isCategoryExists)
-            return new ServiceResponse(false, $"Category with the name '{categoryDto.Name}' already exists.");
+            return new ServiceResponse(false, $"Category with the name '{categoryDto.Name}' already exists.", ServiceErrorCode.BadRequest);
 
         var mappedCategory = _mapper.Map<Category>(categoryDto);
         await _categoryRepo.CreateAsync(mappedCategory);
 
-        return new ServiceResponse(true, "Category created successfully");
+        return new ServiceResponse(true, "Category created successfully", ServiceErrorCode.Success);
     }
 
     public async Task<IEnumerable<CategoryToReturnDto>> GetCategoriesAsync()
@@ -59,11 +59,12 @@ public class CategoryService : ICategoryService
         var category = await _categoryRepo.GetByIdWithSpecAsync(spec);
 
         if (category is null)
-            return new ServiceResponse(false, $"Category with Id {id} Not Found");
+            return new ServiceResponse(false, $"Category with Id {id} Not Found", ServiceErrorCode.NotFound);
 
-        await _categoryRepo.DeleteAsync(category);
+        category.IsActive = false;
+        await _categoryRepo.UpdateAsync(category);
 
-        return new ServiceResponse(true, "Category removed successfully");
+        return new ServiceResponse(true, "Category removed successfully", ServiceErrorCode.Success);
     }
 
     public async Task<ServiceResponse> UpdateCategoryAsync(UpdateCategoryDto categoryDto)
@@ -75,18 +76,18 @@ public class CategoryService : ICategoryService
         var isCategoryExists = await _categoryRepo.IsExistsWithSpecAsync(spec);
 
         if (!isCategoryExists)
-            return new ServiceResponse(false, $"Category with ID {categoryDto.Id} not found.");
+            return new ServiceResponse(false, $"Category with ID {categoryDto.Id} not found.", ServiceErrorCode.NotFound);
 
         var nameSpec = new CategoryByNameSpecification(categoryDto.Name);
         var existingCategory = await _categoryRepo.IsExistsWithSpecAsync(nameSpec);
 
         if (existingCategory && category.Name != categoryDto.Name)
-            return new ServiceResponse(false, $"Category name '{categoryDto.Name}' must be unique.");
+            return new ServiceResponse(false, $"Category name '{categoryDto.Name}' must be unique.", ServiceErrorCode.BadRequest);
 
         category = _mapper.Map(categoryDto, category);
 
         await _categoryRepo.UpdateAsync(category);
 
-        return new ServiceResponse(true, "Category updated Successfully");
+        return new ServiceResponse(true, "Category updated Successfully", ServiceErrorCode.Success);
     }
 }

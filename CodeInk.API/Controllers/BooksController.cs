@@ -40,8 +40,8 @@ public class BooksController : APIBaseController
     {
         var result = await _bookService.CreateBookAsync(bookDto);
 
-        return result.success ? Ok(new ApiResponse(201, result.message))
-                              : BadRequest(new ApiResponse(300, result.message));
+        return result.success ? Ok(new ApiResponse((int)result.errorCode, result.message))
+                              : BadRequest(new ApiResponse((int)result.errorCode, result.message));
     }
 
     [HttpPut]
@@ -49,7 +49,16 @@ public class BooksController : APIBaseController
     {
         var result = await _bookService.UpdateBookAsync(bookDto);
 
-        return result.success ? Ok(new ApiResponse(201, result.message))
-                              : BadRequest(new ApiResponse(300, result.message));
+        return result.success ? Ok(new ApiResponse((int)result.errorCode, result.message))
+                              : BadRequest(new ApiResponse((int)result.errorCode, result.message));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteBook(int id)
+    {
+        var result = await _bookService.RemoveBookAsync(id);
+
+        return result.success ? Ok(new ApiResponse((int)result.errorCode, result.message))
+                              : BadRequest(new ApiResponse((int)result.errorCode, result.message));
     }
 }

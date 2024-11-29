@@ -6,7 +6,7 @@ public class BookWithCategoriesSpecification : BaseSpecification<Book>
 
     // get all books
     public BookWithCategoriesSpecification(BookSpecParams bookParams) :
-        base(b => (!bookParams.CategoryId.HasValue || b.BookCategories.Any(bc => bc.CategoryId == bookParams.CategoryId)))
+        base(b => b.IsActive && (!bookParams.CategoryId.HasValue || b.BookCategories.Any(bc => bc.CategoryId == bookParams.CategoryId)))
     {
         Includes.Add(b => b.BookCategories);
         IncludeStrings.Add("BookCategories.Category");
@@ -33,7 +33,7 @@ public class BookWithCategoriesSpecification : BaseSpecification<Book>
     }
 
     //get book by id
-    public BookWithCategoriesSpecification(int id) : base(b => b.Id == id)
+    public BookWithCategoriesSpecification(int id) : base(b => b.IsActive && b.Id == id)
     {
         Includes.Add(b => b.BookCategories);
         IncludeStrings.Add("BookCategories.Category");

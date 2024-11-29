@@ -29,8 +29,9 @@ public class BookService : IBookService
 
         var mappedBooks = _mapper.Map<IReadOnlyList<BookDetailDto>>(books);
 
+        var activeBookSpec = new ActiveBooksSpecification();
+        var count = await _bookRepo.CountWithSpecAsync(activeBookSpec);
 
-        var count = await _bookRepo.CountAllAsync();
         var totalPages = (int)Math.Ceiling(count * 1.0 / bookParams.PageSize);
 
 
@@ -58,7 +59,7 @@ public class BookService : IBookService
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
         if (isISBNExists)
-            return new ServiceResponse(false, "A book with this ISBN already exists.");
+            return new ServiceResponse(false, "A book with this ISBN already exists.", ServiceErrorCode.BadRequest);
 
         // Upload the cover image and get the URL
         string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, "Images/Books");
@@ -72,7 +73,7 @@ public class BookService : IBookService
 
         await _bookRepo.CreateAsync(book);
 
-        return new ServiceResponse(true, "Book created successfully");
+        return new ServiceResponse(true, "Book created successfully", ServiceErrorCode.Created);
     }
 
     public async Task<ServiceResponse> UpdateBookAsync(UpdateBookDto bookDto)
@@ -81,12 +82,12 @@ public class BookService : IBookService
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
 
         if (book is null)
-            return new ServiceResponse(false, $"Book with Id {bookDto.Id} not found.");
+            return new ServiceResponse(false, $"Book with Id {bookDto.Id} not found.", ServiceErrorCode.NotFound);
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
 
         if (isISBNExists && book.ISBN != bookDto.ISBN)
-            return new ServiceResponse(false, "A book with this ISBN already exists.");
+            return new ServiceResponse(false, "A book with this ISBN already exists.", ServiceErrorCode.BadRequest);
 
         book = _mapper.Map(bookDto, book);
 
@@ -106,12 +107,25 @@ public class BookService : IBookService
 
         await _bookRepo.UpdateAsync(book);
 
-        return new ServiceResponse(true, "Book updated successfully.");
+        return new ServiceResponse(true, "Book updated successfully.", ServiceErrorCode.Success);
     }
 
 
 
+    public async Task<ServiceResponse> RemoveBookAsync(int id)
+    {
+        var spec = new BookByIdSpecification(id);
 
+        var book = await _bookRepo.GetByIdWithSpecAsync(spec);
+
+        if (book is null)
+            return new ServiceResponse(false, $"Book with Id {id} Not Found", ServiceErrorCode.NotFound);
+
+        book.IsActive = false;
+        await _bookRepo.UpdateAsync(book);
+
+        return new ServiceResponse(true, "Book removed successfully", ServiceErrorCode.Success);
+    }
 
 
 
