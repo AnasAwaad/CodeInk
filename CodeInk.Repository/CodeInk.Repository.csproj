@@ -15,8 +15,4 @@
     <ProjectReference Include="..\CodeInk.Core\CodeInk.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\DataSeed\" />
-  </ItemGroup>
-
 </Project>

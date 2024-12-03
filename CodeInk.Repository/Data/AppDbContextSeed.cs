@@ -58,5 +58,22 @@ public static class AppDbContextSeed
             }
 
         }
+
+        // seed bookCategory data
+        if (!dbContext.DeliveryMethods.Any())
+        {
+            var DeliveryMethodData = File.ReadAllText("../CodeInk.Repository/Data/DataSeed/Delivery.json");
+            var DeliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(DeliveryMethodData);
+
+            if (DeliveryMethods?.Count > 0)
+            {
+                foreach (var deliveryMethod in DeliveryMethods)
+                {
+                    await dbContext.Set<DeliveryMethod>().AddAsync(deliveryMethod);
+                }
+                await dbContext.SaveChangesAsync();
+            }
+
+        }
     }
 }
