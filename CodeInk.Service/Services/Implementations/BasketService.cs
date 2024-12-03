@@ -17,7 +17,7 @@ public class BasketService : IBasketService
     }
     public async Task<CustomerBasketDto> GetBasketAsync(string basketId)
     {
-        var basket = _basketRepo.GetBasketAsync(basketId);
+        var basket = await _basketRepo.GetBasketAsync(basketId);
 
         if (basket is null)
             return new CustomerBasketDto();
@@ -48,7 +48,7 @@ public class BasketService : IBasketService
         var random = new Random();
 
         // generate 4 digit number from 1000 to 9999
-        var randNumber = random.Next(1000, 1000);
+        var randNumber = random.Next(1000, 10000);
 
         return $"BS-{randNumber}";
     }
