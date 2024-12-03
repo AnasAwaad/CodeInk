@@ -2,6 +2,7 @@ using CodeInk.API.Extensions;
 using CodeInk.API.Middlewares;
 using CodeInk.Repository.Data;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace CodeInk.API;
 
@@ -25,6 +26,11 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
 
+        builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
+        {
+            var connection = builder.Configuration.GetConnectionString("RedisConnection");
+            return ConnectionMultiplexer.Connect(connection);
+        });
 
         builder.Services.AddApplicationServices();
 
