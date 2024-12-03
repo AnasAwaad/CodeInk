@@ -3,6 +3,8 @@ using CodeInk.Application.DTOs.Book;
 using CodeInk.Application.DTOs.Category;
 using CodeInk.Application.Mapping.Resolvers;
 using CodeInk.Core.Entities;
+using CodeInk.Repository.Models;
+using CodeInk.Service.DTOs.Basket;
 
 namespace CodeInk.Application.Mapping;
 
@@ -25,5 +27,8 @@ public class MappingProfiles : Profile
 
         CreateMap<Category, CategoryToReturnDto>()
             .ForMember(dest => dest.NumOfBooks, opt => opt.MapFrom(s => s.BookCategories.Count()));
+
+        CreateMap<CustomerBasket, CustomerBasketDto>().ReverseMap();
+        CreateMap<BasketItem, BasketItemDto>().ReverseMap();
     }
 }

@@ -1,9 +1,9 @@
-﻿using CodeInk.Core.Entities;
-using CodeInk.Core.Repositories;
+﻿using CodeInk.Core.Repositories;
+using CodeInk.Repository.Models;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace CodeInk.Repository;
+namespace CodeInk.Repository.Basket;
 public class BasketRepository : IBasketRepository
 {
     private readonly IDatabase _database;
@@ -16,7 +16,7 @@ public class BasketRepository : IBasketRepository
     {
         var basket = await _database.StringGetAsync(id);
 
-        return basket.IsNull ? null : JsonSerializer.Deserialize<CustomerBasket>(basket!);
+        return basket.IsNullOrEmpty ? null : JsonSerializer.Deserialize<CustomerBasket>(basket!);
     }
 
     public async Task<bool> RemoveBasketAsync(string id)
@@ -30,9 +30,8 @@ public class BasketRepository : IBasketRepository
     {
         var jsonBasket = JsonSerializer.Serialize(basket);
 
-        var isCreatedOrUpdated = await _database.StringSetAsync(basket.Id, jsonBasket, TimeSpan.FromDays(1));
+        var isCreatedOrUpdated = await _database.StringSetAsync(basket.Id, jsonBasket, TimeSpan.FromDays(30));
 
-        return isCreatedOrUpdated ? await GetBasketAsync(basket.Id)
-                                  : null;
+        return isCreatedOrUpdated ? await GetBasketAsync(basket.Id) : null;
     }
 }

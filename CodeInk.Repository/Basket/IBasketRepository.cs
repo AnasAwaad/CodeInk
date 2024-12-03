@@ -1,4 +1,4 @@
-﻿using CodeInk.Core.Entities;
+﻿using CodeInk.Repository.Models;
 
 namespace CodeInk.Core.Repositories;
 public interface IBasketRepository
