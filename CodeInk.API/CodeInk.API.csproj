@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CodeInk.Service\CodeInk.Application.csproj" />
+    <ProjectReference Include="..\CodeInk.Service\CodeInk.Service.csproj" />
   </ItemGroup>
 
 </Project>

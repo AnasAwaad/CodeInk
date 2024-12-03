@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeInk.Core", "CodeInk.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeInk.Repository", "CodeInk.Repository\CodeInk.Repository.csproj", "{197EE581-6C06-4DB4-A0B1-27E11E39D39F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeInk.Application", "CodeInk.Service\CodeInk.Application.csproj", "{2FDF82FA-69C8-4DAA-8D8C-77A67E794820}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeInk.Service", "CodeInk.Service\CodeInk.Service.csproj", "{2FDF82FA-69C8-4DAA-8D8C-77A67E794820}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
