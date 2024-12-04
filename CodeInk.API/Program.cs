@@ -41,7 +41,7 @@ public class Program
         });
 
         builder.Services.AddApplicationServices()
-                        .AddIdentityServices();
+                        .AddIdentityServices(builder.Configuration);
 
         #endregion
 

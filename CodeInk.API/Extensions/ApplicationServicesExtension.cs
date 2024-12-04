@@ -24,6 +24,7 @@ public static class ApplicationServicesExtension
         Services.AddScoped<IBasketRepository, BasketRepository>();
         Services.AddScoped<ICacheService, CacheService>();
         Services.AddScoped<IBasketService, BasketService>();
+        Services.AddScoped<ITokenService, TokenService>();
 
         Services.AddAutoMapper(typeof(MappingProfiles));
 
