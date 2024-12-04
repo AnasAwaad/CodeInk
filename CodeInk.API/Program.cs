@@ -1,6 +1,9 @@
 using CodeInk.API.Extensions;
 using CodeInk.API.Middlewares;
+using CodeInk.Core.Entities.IdentityEntities;
 using CodeInk.Repository.Data;
+using CodeInk.Repository.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -32,8 +35,13 @@ public class Program
             return ConnectionMultiplexer.Connect(connection);
         });
 
-        builder.Services.AddApplicationServices();
+        builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+        });
 
+        builder.Services.AddApplicationServices()
+                        .AddIdentityServices();
 
         #endregion
 
@@ -53,7 +61,14 @@ public class Program
         {
             // ask CLR to create object from dbContext explicitly
             var dbContext = services.GetRequiredService<AppDbContext>();
+            var identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+            var userManage = services.GetRequiredService<UserManager<ApplicationUser>>();
 
+
+            await dbContext.Database.MigrateAsync();
+            await identityDbContext.Database.MigrateAsync();
+
+            await AppIdentityDbSeed.SeedUsersAsync(userManage);
             await AppDbContextSeed.SeedDataAsync(dbContext);
         }
         catch (Exception ex)
