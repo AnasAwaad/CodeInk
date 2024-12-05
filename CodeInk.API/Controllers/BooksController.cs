@@ -2,6 +2,8 @@
 using CodeInk.Application.DTOs.Book;
 using CodeInk.Core.Service;
 using CodeInk.Core.Specifications;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;
@@ -34,7 +36,7 @@ public class BooksController : APIBaseController
                               : Ok(new ApiResponse(200, "Book retrived successfully", data));
     }
 
-
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult> CreateBook(CreateBookDto bookDto)
     {
@@ -44,6 +46,7 @@ public class BooksController : APIBaseController
                               : BadRequest(new ApiResponse((int)result.errorCode, result.message));
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut]
     public async Task<ActionResult> UpdateBook(UpdateBookDto bookDto)
     {
@@ -53,6 +56,7 @@ public class BooksController : APIBaseController
                               : BadRequest(new ApiResponse((int)result.errorCode, result.message));
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteBook(int id)
     {
