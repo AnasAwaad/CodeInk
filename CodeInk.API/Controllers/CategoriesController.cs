@@ -1,6 +1,7 @@
 ﻿using CodeInk.Application.DTOs;
 using CodeInk.Application.DTOs.Category;
 using CodeInk.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;
@@ -34,6 +35,7 @@ public class CategoriesController : APIBaseController
                               : Ok(new ApiResponse(200, "Categories retrived successfully", data));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
@@ -43,7 +45,7 @@ public class CategoriesController : APIBaseController
                               : BadRequest(new ApiResponse(300, result.message));
     }
 
-
+    [Authorize]
     [HttpPut]
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
@@ -53,7 +55,7 @@ public class CategoriesController : APIBaseController
                               : BadRequest(new ApiResponse(300, result.message));
     }
 
-
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
     {

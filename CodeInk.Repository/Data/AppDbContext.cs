@@ -18,4 +18,5 @@ public class AppDbContext : DbContext
     public DbSet<Book> Books { get; set; }
     public DbSet<BookCategory> BookCategories { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
 }

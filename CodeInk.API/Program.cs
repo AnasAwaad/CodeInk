@@ -1,7 +1,11 @@
 using CodeInk.API.Extensions;
 using CodeInk.API.Middlewares;
+using CodeInk.Core.Entities.IdentityEntities;
 using CodeInk.Repository.Data;
+using CodeInk.Repository.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace CodeInk.API;
 
@@ -25,10 +29,30 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
 
+        builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
+        {
+            var connection = builder.Configuration.GetConnectionString("RedisConnection");
+            return ConnectionMultiplexer.Connect(connection);
+        });
 
-        builder.Services.AddApplicationServices();
+        builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+        });
 
+        builder.Services.AddApplicationServices()
+                        .AddIdentityServices(builder.Configuration);
 
+        // Add CORS configuration
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", policy =>
+            {
+                policy.WithOrigins("*")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
         #endregion
 
         var app = builder.Build();
@@ -47,7 +71,14 @@ public class Program
         {
             // ask CLR to create object from dbContext explicitly
             var dbContext = services.GetRequiredService<AppDbContext>();
+            var identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+            var userManage = services.GetRequiredService<UserManager<ApplicationUser>>();
 
+
+            await dbContext.Database.MigrateAsync();
+            await identityDbContext.Database.MigrateAsync();
+
+            await AppIdentityDbSeed.SeedUsersAsync(userManage);
             await AppDbContextSeed.SeedDataAsync(dbContext);
         }
         catch (Exception ex)
@@ -75,6 +106,9 @@ public class Program
         app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
         app.UseHttpsRedirection();
+
+        // Apply CORS policy
+        app.UseCors("CorsPolicy");
 
         app.UseAuthorization();
 

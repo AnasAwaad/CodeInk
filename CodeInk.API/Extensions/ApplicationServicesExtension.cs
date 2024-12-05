@@ -5,6 +5,9 @@ using CodeInk.Application.Services.Interfaces;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
 using CodeInk.Repository;
+using CodeInk.Repository.Basket;
+using CodeInk.Service.Services.Implementations;
+using CodeInk.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Extensions;
@@ -18,6 +21,11 @@ public static class ApplicationServicesExtension
         Services.AddScoped<IFileService, FileService>();
         Services.AddScoped<IBookService, BookService>();
         Services.AddScoped<ICategoryService, CategoryService>();
+        Services.AddScoped<IBasketRepository, BasketRepository>();
+        Services.AddScoped<ICacheService, CacheService>();
+        Services.AddScoped<IBasketService, BasketService>();
+        Services.AddScoped<ITokenService, TokenService>();
+        Services.AddScoped<IUserService, UserService>();
 
         Services.AddAutoMapper(typeof(MappingProfiles));
 

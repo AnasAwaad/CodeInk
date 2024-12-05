@@ -30,7 +30,7 @@ public class ExceptionMiddleWare
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
 
-            ApiExceptionResponse response = _hostEnvironment.IsDevelopment() ? new(500, ex.Message, ex.StackTrace) : new(500);
+            ApiExceptionResponse response = _hostEnvironment.IsDevelopment() ? new(500, ex.Message, ex.StackTrace) : new(500, ex.Message);
 
             var options = new JsonSerializerOptions()
             {
