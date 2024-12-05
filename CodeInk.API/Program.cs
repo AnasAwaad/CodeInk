@@ -43,6 +43,16 @@ public class Program
         builder.Services.AddApplicationServices()
                         .AddIdentityServices(builder.Configuration);
 
+        // Add CORS configuration
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", policy =>
+            {
+                policy.WithOrigins("*")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
         #endregion
 
         var app = builder.Build();
@@ -96,6 +106,9 @@ public class Program
         app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
         app.UseHttpsRedirection();
+
+        // Apply CORS policy
+        app.UseCors("CorsPolicy");
 
         app.UseAuthorization();
 
