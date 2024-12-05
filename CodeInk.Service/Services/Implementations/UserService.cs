@@ -2,6 +2,7 @@
 using CodeInk.Service.DTOs.User;
 using CodeInk.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeInk.Service.Services.Implementations;
 public class UserService : IUserService
@@ -37,8 +38,31 @@ public class UserService : IUserService
         };
     }
 
-    public Task<UserDto> RegisterAsync(RegisterDto input)
+    public async Task<UserDto?> RegisterAsync(RegisterDto input)
     {
-        throw new NotImplementedException();
+        var isExist = await _userManager.Users.Where(u => u.Email == input.Email || u.UserName == input.UserName).AnyAsync();
+
+        if (isExist)
+            return null;
+
+        var user = new ApplicationUser
+        {
+            Email = input.Email,
+            UserName = input.UserName,
+            DisplayName = input.DisplayName,
+        };
+
+        var result = await _userManager.CreateAsync(user, input.Password);
+
+        if (!result.Succeeded)
+            throw new Exception($"Error creating user: {string.Join(',', result.Errors.SelectMany(e => e.Description))}");
+
+        return new UserDto
+        {
+            Id = user.Id,
+            DisplayName = input.DisplayName,
+            Email = input.Email,
+            Token = _tokenService.GenerateToken(user),
+        };
     }
 }

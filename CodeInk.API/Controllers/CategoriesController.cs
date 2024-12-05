@@ -1,7 +1,6 @@
 ﻿using CodeInk.Application.DTOs;
 using CodeInk.Application.DTOs.Category;
 using CodeInk.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +35,7 @@ public class CategoriesController : APIBaseController
                               : Ok(new ApiResponse(200, "Categories retrived successfully", data));
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
@@ -46,7 +45,7 @@ public class CategoriesController : APIBaseController
                               : BadRequest(new ApiResponse(300, result.message));
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     [HttpPut]
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
@@ -56,7 +55,7 @@ public class CategoriesController : APIBaseController
                               : BadRequest(new ApiResponse(300, result.message));
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
     {

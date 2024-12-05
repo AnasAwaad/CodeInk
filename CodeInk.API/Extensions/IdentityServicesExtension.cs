@@ -14,19 +14,23 @@ public static class IdentityServicesExtension
         Services.AddIdentity<ApplicationUser, IdentityRole>()   // add iterfaces
                         .AddEntityFrameworkStores<AppIdentityDbContext>();  // add classes that implement interfaces
 
-        Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)   // UserManager , SignInManager , RoleManager
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:Key"])),
-                        ValidateIssuer = true,
-                        ValidIssuer = configuration["Token:Issuer"],
-                        ValidateAudience = false
+        Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:Key"])),
+                ValidateIssuer = true,
+                ValidIssuer = configuration["Token:Issuer"],
+                ValidateAudience = false
 
-                    };
-                });
+            };
+        });
 
         return Services;
     }
