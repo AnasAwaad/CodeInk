@@ -1,6 +1,7 @@
 ﻿using CodeInk.Application.DTOs;
 using CodeInk.Service.DTOs.User;
 using CodeInk.Service.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeInk.API.Controllers;
@@ -33,5 +34,33 @@ public class AccountController : APIBaseController
             return BadRequest(new ApiResponse(400, "Username or Email Already Exists"));
 
         return Ok(new ApiResponse(200, "Registration successful", result));
+    }
+
+    [Authorize]
+    [HttpGet("GetCurrentUser")]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        return Ok(new ApiResponse(200,
+                                        "User retrived successfully",
+                                        await _userService.GetCurrentUserAsync(User)));
+    }
+
+
+    [Authorize]
+    [HttpGet("Address")]
+    public async Task<IActionResult> GetCurrentUserAddress()
+    {
+        return Ok(new ApiResponse(200,
+                                        "User address retrived successfully",
+                                        await _userService.GetCurrentUserAddressAsync(User)));
+    }
+
+    [Authorize]
+    [HttpPut("Address")]
+    public async Task<IActionResult> UpdateUserAddress(AddressDto address)
+    {
+        return Ok(new ApiResponse(200,
+                                        "Address updated successfully",
+                                        await _userService.UpdateUserAddressAsync(User, address)));
     }
 }
