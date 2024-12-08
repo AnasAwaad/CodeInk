@@ -51,17 +51,30 @@ public class GlobalErrorHandlingMiddleware
         context.Response.ContentType = "application/json";
 
 
+        var response = new ErrorDetails()
+        {
+            ErrorMessage = ex.Message,
+        };
+
+
         context.Response.StatusCode = ex switch
         {
             NotFoundException => (int)HttpStatusCode.NotFound,
             BadRequestException => (int)HttpStatusCode.BadRequest,
+            UnAuthorizedException => (int)HttpStatusCode.Unauthorized,
+            ValidationException validationException => HandleValidationException(validationException, response),
             _ => (int)HttpStatusCode.InternalServerError,
         };
 
-
-        var response = new ErrorDetails(context.Response.StatusCode, ex.Message);
-
+        response.StatusCode = context.Response.StatusCode;
 
         await context.Response.WriteAsync(response.ToString());
+    }
+
+    private int HandleValidationException(ValidationException ex, ErrorDetails response)
+    {
+        response.Errors = ex.Errors;
+        return (int)HttpStatusCode.BadRequest;
+
     }
 }

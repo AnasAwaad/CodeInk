@@ -73,13 +73,19 @@ public class Program
             var dbContext = services.GetRequiredService<AppDbContext>();
             var identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
             var userManage = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManage = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+            // update database and seed data
+            if (dbContext.Database.GetPendingMigrations().Any())
+                await dbContext.Database.MigrateAsync();
 
-            await dbContext.Database.MigrateAsync();
-            await identityDbContext.Database.MigrateAsync();
-
-            await AppIdentityDbSeed.SeedUsersAsync(userManage);
             await AppDbContextSeed.SeedDataAsync(dbContext);
+
+            // update identity database and seed data
+            if (identityDbContext.Database.GetPendingMigrations().Any())
+                await identityDbContext.Database.MigrateAsync();
+
+            await AppIdentityDbSeed.SeedUsersAsync(userManage, roleManage);
         }
         catch (Exception ex)
         {

@@ -7,11 +7,18 @@ public class ErrorDetails
 
     public int StatusCode { get; set; }
     public string ErrorMessage { get; set; }
+    public IEnumerable<string>? Errors { get; set; }
 
-    public ErrorDetails(int statusCode, string errorMessage)
+    public ErrorDetails()
+    {
+
+    }
+    public ErrorDetails(int statusCode, string errorMessage, IEnumerable<string>? errors = null)
     {
         StatusCode = statusCode;
         ErrorMessage = errorMessage;
+        Errors = errors;
+
     }
 
     public override string ToString()

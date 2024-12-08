@@ -56,7 +56,7 @@ public class BookService : IBookService
         var validateResult = ValidateBookDto(bookDto);
 
         if (!validateResult.isValid)
-            throw new ValidationException(validateResult.errorMessage);
+            throw new ValidationException(new List<string>() { validateResult.errorMessage });
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
 

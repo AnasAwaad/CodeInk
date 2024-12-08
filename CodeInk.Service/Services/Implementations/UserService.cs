@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CodeInk.Core.Entities.IdentityEntities;
+using CodeInk.Core.Exceptions;
 using CodeInk.Service.DTOs.User;
 using CodeInk.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -54,12 +55,12 @@ public class UserService : IUserService
         var user = _userManager.Users.Where(u => u.Email == input.Email || u.UserName == input.Email).FirstOrDefault();
 
         if (user is null)
-            return null;
+            throw new UnAuthorizedException("Username or Email Doesn't Exist");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, input.Password, false);
 
         if (!result.Succeeded)
-            throw new Exception($"Credential for {input.Email} are not valid");
+            throw new UnAuthorizedException();
 
         return new UserDto
         {
@@ -72,11 +73,6 @@ public class UserService : IUserService
 
     public async Task<UserDto?> RegisterAsync(RegisterDto input)
     {
-        var isExist = await _userManager.Users.Where(u => u.Email == input.Email || u.UserName == input.UserName).AnyAsync();
-
-        if (isExist)
-            return null;
-
         var user = new ApplicationUser
         {
             Email = input.Email,
@@ -87,7 +83,10 @@ public class UserService : IUserService
         var result = await _userManager.CreateAsync(user, input.Password);
 
         if (!result.Succeeded)
-            throw new Exception($"Error creating user: {string.Join(',', result.Errors.SelectMany(e => e.Description))}");
+        {
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            throw new ValidationException(errors);
+        }
 
         return new UserDto
         {
