@@ -21,7 +21,6 @@ public class CategoriesController : APIBaseController
     public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetCategories()
     {
         var data = await _categoryService.GetCategoriesAsync();
-
         return Ok(new ApiResponse(200, "Categories retrived successfully", data));
     }
 
@@ -30,38 +29,31 @@ public class CategoriesController : APIBaseController
     public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
     {
         var data = await _categoryService.GetCategoryByIdAsync(id);
-
-        return data is null ? NotFound(new ApiResponse(404, $"Category with Id {id} Not Found"))
-                              : Ok(new ApiResponse(200, "Categories retrived successfully", data));
+        return Ok(new ApiResponse(200, "Category retrived successfully", data));
     }
 
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
-        var result = await _categoryService.CreateCategoryAsync(category);
-
-        return result.success ? Ok(new ApiResponse(201, result.message))
-                              : BadRequest(new ApiResponse(300, result.message));
+        var categoryId = await _categoryService.CreateCategoryAsync(category);
+        return Ok(new ApiResponse(201, "Category created successfully", new { categoryId }));
     }
 
     [Authorize]
     [HttpPut]
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
-        var result = await _categoryService.UpdateCategoryAsync(category);
-
-        return result.success ? Ok(new ApiResponse(201, result.message))
-                              : BadRequest(new ApiResponse(300, result.message));
+        await _categoryService.UpdateCategoryAsync(category);
+        return Ok(new ApiResponse(200, "Category updated successfully"));
     }
 
     [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
     {
-        var result = await _categoryService.RemoveCategoryAsync(id);
+        await _categoryService.RemoveCategoryAsync(id);
+        return Ok(new ApiResponse(200, "Category removed successfully"));
 
-        return result.success ? Ok(new ApiResponse(201, result.message))
-                              : BadRequest(new ApiResponse(300, result.message));
     }
 }
