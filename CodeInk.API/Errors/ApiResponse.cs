@@ -1,5 +1,5 @@
 ﻿
-namespace CodeInk.Application.DTOs;
+namespace CodeInk.API.Errors;
 
 public class ApiResponse
 {

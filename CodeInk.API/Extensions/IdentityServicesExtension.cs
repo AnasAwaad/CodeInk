@@ -11,8 +11,19 @@ public static class IdentityServicesExtension
 {
     public static IServiceCollection AddIdentityServices(this IServiceCollection Services, IConfiguration configuration)
     {
-        Services.AddIdentity<ApplicationUser, IdentityRole>()   // add iterfaces
-                        .AddEntityFrameworkStores<AppIdentityDbContext>();  // add classes that implement interfaces
+        Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.Password.RequiredUniqueChars = 0;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 6;
+
+            options.User.RequireUniqueEmail = true;
+
+
+        }).AddEntityFrameworkStores<AppIdentityDbContext>();  // add classes that implement interfaces
 
         Services.AddAuthentication(options =>
         {

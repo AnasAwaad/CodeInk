@@ -1,6 +1,4 @@
-﻿using CodeInk.Application.DTOs;
-
-namespace CodeInk.API.Errors;
+﻿namespace CodeInk.API.Errors;
 
 public class ApiExceptionResponse : ApiResponse
 {

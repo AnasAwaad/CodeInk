@@ -3,5 +3,5 @@
 namespace CodeInk.Service.Services.Interfaces;
 public interface ITokenService
 {
-    string GenerateToken(ApplicationUser appUser);
+    string GenerateToken(ApplicationUser appUser, IList<string> roles);
 }
