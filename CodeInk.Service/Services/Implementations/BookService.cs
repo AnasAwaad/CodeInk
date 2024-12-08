@@ -2,6 +2,7 @@
 using CodeInk.Application.DTOs;
 using CodeInk.Application.DTOs.Book;
 using CodeInk.Core.Entities;
+using CodeInk.Core.Exceptions;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
 using CodeInk.Core.Specifications;
@@ -45,21 +46,22 @@ public class BookService : IBookService
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
 
         if (book is null)
-            return null;
+            throw new BookNotFoundException(id);
 
         return _mapper.Map<BookDetailDto>(book);
     }
 
-    public async Task<ServiceResponse> CreateBookAsync(CreateBookDto bookDto)
+    public async Task<int> CreateBookAsync(CreateBookDto bookDto)
     {
         var validateResult = ValidateBookDto(bookDto);
 
         if (!validateResult.isValid)
-            return new ServiceResponse(false, validateResult.errorMessage);
+            throw new ValidationException(validateResult.errorMessage);
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
+
         if (isISBNExists)
-            return new ServiceResponse(false, "A book with this ISBN already exists.", ServiceErrorCode.BadRequest);
+            throw new BookISBNAlreadyExistsException(bookDto.ISBN);
 
         // Upload the cover image and get the URL
         string coverImageUrl = await _fileService.UploadFileAsync(bookDto.CoverImage, "Images/Books");
@@ -73,21 +75,21 @@ public class BookService : IBookService
 
         await _bookRepo.CreateAsync(book);
 
-        return new ServiceResponse(true, "Book created successfully", ServiceErrorCode.Created);
+        return book.Id;
     }
 
-    public async Task<ServiceResponse> UpdateBookAsync(UpdateBookDto bookDto)
+    public async Task UpdateBookAsync(UpdateBookDto bookDto)
     {
         var bookSpec = new BookWithCategoriesSpecification(bookDto.Id);
         var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
 
         if (book is null)
-            return new ServiceResponse(false, $"Book with Id {bookDto.Id} not found.", ServiceErrorCode.NotFound);
+            throw new BookNotFoundException(bookDto.Id);
 
         bool isISBNExists = await CheckIfISBNExistsAsync(bookDto.ISBN);
 
         if (isISBNExists && book.ISBN != bookDto.ISBN)
-            return new ServiceResponse(false, "A book with this ISBN already exists.", ServiceErrorCode.BadRequest);
+            throw new BookISBNAlreadyExistsException(book.ISBN);
 
         book = _mapper.Map(bookDto, book);
 
@@ -106,29 +108,23 @@ public class BookService : IBookService
         await AddCategoriesToBookAsync(bookDto.CategoryIds, book);
 
         await _bookRepo.UpdateAsync(book);
-
-        return new ServiceResponse(true, "Book updated successfully.", ServiceErrorCode.Success);
     }
 
-
-
-    public async Task<ServiceResponse> RemoveBookAsync(int id)
+    public async Task RemoveBookAsync(int id)
     {
         var spec = new BookByIdSpecification(id);
 
         var book = await _bookRepo.GetByIdWithSpecAsync(spec);
 
         if (book is null)
-            return new ServiceResponse(false, $"Book with Id {id} Not Found", ServiceErrorCode.NotFound);
+            throw new BookNotFoundException(id);
 
         book.IsActive = false;
         await _bookRepo.UpdateAsync(book);
-
-        return new ServiceResponse(true, "Book removed successfully", ServiceErrorCode.Success);
     }
 
 
-
+    #region Private methods
     private async Task<bool> CheckIfISBNExistsAsync(string isbn)
     {
         var spec = new BookISBNExistsSpecification(isbn);
@@ -157,6 +153,6 @@ public class BookService : IBookService
             return (false, "At least one category must be selected.");
         return (true, string.Empty);
     }
-
+    #endregion
 
 }

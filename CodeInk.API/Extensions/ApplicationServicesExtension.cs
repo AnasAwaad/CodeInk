@@ -1,4 +1,4 @@
-﻿using CodeInk.API.Errors;
+﻿using CodeInk.API.Factories;
 using CodeInk.Application.Mapping;
 using CodeInk.Application.Services.Implementations;
 using CodeInk.Application.Services.Interfaces;
@@ -29,24 +29,11 @@ public static class ApplicationServicesExtension
 
         Services.AddAutoMapper(typeof(MappingProfiles));
 
+        // override this default behavior of validation error response
         Services.Configure<ApiBehaviorOptions>(options =>
         {
-
-            // override this default behavior
-            options.InvalidModelStateResponseFactory = (actionContext) =>
-            {
-                var errors = actionContext.ModelState.Where(P => P.Value?.Errors.Count > 0)
-                                                     .SelectMany(P => P.Value!.Errors.Select(e => e.ErrorMessage))
-                                                     .ToList();
-
-                var apiValidationError = new ApiValidationErrorResponse()
-                {
-                    Errors = errors
-                };
-
-                return new BadRequestObjectResult(apiValidationError);
-            };
-
+            options.InvalidModelStateResponseFactory =
+                actionContext => ApiResponseFactory.CustomeValidationErrorResponse(actionContext);
         });
 
         return Services;

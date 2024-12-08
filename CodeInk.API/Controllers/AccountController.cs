@@ -1,4 +1,4 @@
-﻿using CodeInk.Application.DTOs;
+﻿using CodeInk.API.Errors;
 using CodeInk.Service.DTOs.User;
 using CodeInk.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;

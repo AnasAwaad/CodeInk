@@ -7,7 +7,7 @@ public interface IBookService
 {
     Task<Pagination<BookDetailDto>> GetBooksAsync(BookSpecParams bookParams);
     Task<BookDetailDto?> GetBookByIdAsync(int id);
-    Task<ServiceResponse> CreateBookAsync(CreateBookDto bookDto);
-    Task<ServiceResponse> UpdateBookAsync(UpdateBookDto bookDto);
-    Task<ServiceResponse> RemoveBookAsync(int id);
+    Task<int> CreateBookAsync(CreateBookDto bookDto);
+    Task UpdateBookAsync(UpdateBookDto bookDto);
+    Task RemoveBookAsync(int id);
 }

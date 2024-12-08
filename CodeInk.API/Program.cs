@@ -93,7 +93,9 @@ public class Program
 
         #region Configure the HTTP request pipeline.
 
-        app.UseMiddleware<ExceptionMiddleWare>();
+        app.UseMiddleware<GlobalErrorHandlingMiddleware>();
+
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -102,8 +104,6 @@ public class Program
 
         app.UseStaticFiles();
 
-        // for notfound endpoint
-        app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
         app.UseHttpsRedirection();
 
