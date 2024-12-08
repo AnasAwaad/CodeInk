@@ -32,7 +32,7 @@ public class CategoriesController : APIBaseController
         return Ok(new ApiResponse(200, "Category retrived successfully", data));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse>> CreateCategory(AddCategoryDto category)
     {
@@ -40,7 +40,7 @@ public class CategoriesController : APIBaseController
         return Ok(new ApiResponse(201, "Category created successfully", new { categoryId }));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<ActionResult<ApiResponse>> UpdateCategory(UpdateCategoryDto category)
     {
@@ -48,7 +48,7 @@ public class CategoriesController : APIBaseController
         return Ok(new ApiResponse(200, "Category updated successfully"));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> RemoveCategory(int id)
     {
