@@ -12,15 +12,17 @@ public class UserService : IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ITokenService _tokenService;
     private readonly IMapper _mapper;
 
-    public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITokenService tokenService, IMapper mapper)
+    public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITokenService tokenService, IMapper mapper, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenService = tokenService;
         _mapper = mapper;
+        _roleManager = roleManager;
     }
 
     public async Task<UserDto> GetCurrentUserAsync(ClaimsPrincipal User)
@@ -62,12 +64,14 @@ public class UserService : IUserService
         if (!result.Succeeded)
             throw new UnAuthorizedException();
 
+        var roles = await _userManager.GetRolesAsync(user);
+
         return new UserDto
         {
             Id = user.Id,
             Email = input.Email,
             DisplayName = user.DisplayName,
-            Token = _tokenService.GenerateToken(user)
+            Token = _tokenService.GenerateToken(user, roles)
         };
     }
 
@@ -81,19 +85,22 @@ public class UserService : IUserService
         };
 
         var result = await _userManager.CreateAsync(user, input.Password);
+        var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
 
-        if (!result.Succeeded)
+        if (!result.Succeeded || !roleResult.Succeeded)
         {
             var errors = result.Errors.Select(e => e.Description).ToList();
             throw new ValidationException(errors);
         }
+
+        var roles = await _userManager.GetRolesAsync(user);
 
         return new UserDto
         {
             Id = user.Id,
             DisplayName = input.DisplayName,
             Email = input.Email,
-            Token = _tokenService.GenerateToken(user),
+            Token = _tokenService.GenerateToken(user, roles)
         };
     }
 

@@ -18,7 +18,7 @@ public class TokenService : ITokenService
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:Key"]));
     }
 
-    public string GenerateToken(ApplicationUser appUser)
+    public string GenerateToken(ApplicationUser appUser, IList<string> roles)
     {
         var claims = new List<Claim>()
         {
@@ -27,6 +27,11 @@ public class TokenService : ITokenService
             new Claim(ClaimTypes.NameIdentifier, appUser.Id),
             new Claim("UserName", appUser.UserName),
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
 
