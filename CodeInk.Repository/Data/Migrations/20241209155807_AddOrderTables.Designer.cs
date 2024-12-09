@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeInk.Repository.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241209121050_AddOrderTables")]
+    [Migration("20241209155807_AddOrderTables")]
     partial class AddOrderTables
     {
         /// <inheritdoc />
@@ -285,15 +285,19 @@ namespace CodeInk.Repository.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
                             b1.Property<string>("FirstName")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("LastName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("State")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 

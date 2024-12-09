@@ -3,9 +3,10 @@ using CodeInk.Application.DTOs.Book;
 using CodeInk.Application.DTOs.Category;
 using CodeInk.Application.Mapping.Resolvers;
 using CodeInk.Core.Entities;
-using CodeInk.Core.Entities.IdentityEntities;
+using CodeInk.Core.Entities.OrderEntities;
 using CodeInk.Repository.Models;
 using CodeInk.Service.DTOs.Basket;
+using CodeInk.Service.DTOs.Order;
 using CodeInk.Service.DTOs.User;
 
 namespace CodeInk.Application.Mapping;
@@ -34,5 +35,14 @@ public class MappingProfiles : Profile
         CreateMap<BasketItem, BasketItemDto>().ReverseMap();
 
         CreateMap<Address, AddressDto>().ReverseMap();
+
+        // order mapping
+        CreateMap<ShippingAddressDto, Address>();
+
+        CreateMap<OrderItem, OrderItemDto>();
+
+        CreateMap<Order, OrderResultDto>()
+            .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.DeliveryMethod, opt => opt.MapFrom(src => src.DeliveryMethod.ShortName));
     }
 }
