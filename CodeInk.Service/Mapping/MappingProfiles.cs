@@ -38,6 +38,7 @@ public class MappingProfiles : Profile
 
         // order mapping
         CreateMap<ShippingAddressDto, Address>();
+        CreateMap<DeliveryMethod, DeliveryMethodDto>();
 
         CreateMap<OrderItem, OrderItemDto>();
 

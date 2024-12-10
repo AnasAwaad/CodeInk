@@ -3,6 +3,7 @@ using CodeInk.Core.Entities.OrderEntities;
 using CodeInk.Core.Exceptions;
 using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
+using CodeInk.Core.Specifications;
 using CodeInk.Service.DTOs.Order;
 using CodeInk.Service.Services.Interfaces;
 
@@ -39,9 +40,9 @@ public class OrderService : IOrderService
                             ?? throw new BookNotFoundException(item.BookId);
 
 
-            var orderItem = new OrderItem(item.BookId,
-                                          item.BookName,
-                                          item.BookPictureUrl,
+            var orderItem = new OrderItem(bookFromDb.Id,
+                                          bookFromDb.Title,
+                                          bookFromDb.CoverImageUrl,
                                           item.Quantity,
                                           item.Quantity * bookFromDb.Price);
 
@@ -64,5 +65,30 @@ public class OrderService : IOrderService
         #endregion
 
         return _mapper.Map<OrderResultDto>(order);
+    }
+
+    public async Task<IEnumerable<DeliveryMethodDto>> GetAllDeliveryMethodsAsync()
+    {
+        var deliveryMethods = await _deliverMethod.GetAllAsync();
+
+        return _mapper.Map<IEnumerable<DeliveryMethodDto>>(deliveryMethods);
+    }
+
+    public async Task<OrderResultDto> GetOrderByIdAsync(int id)
+    {
+        var order = await _orderRepo.GetByIdWithSpecAsync(new OrderWithIncludesSpecification(id))
+                   ?? throw new OrderNotFoundException(id);
+
+        return _mapper.Map<OrderResultDto>(order);
+    }
+
+    public async Task<IEnumerable<OrderResultDto>> GetOrdersByEmailAsync(string email)
+    {
+        var orders = await _orderRepo.GetAllWithSpecAsync(new OrderWithIncludesSpecification(email));
+
+        if (!orders.Any())
+            throw new OrdersNotFoundException(email);
+
+        return _mapper.Map<IEnumerable<OrderResultDto>>(orders);
     }
 }
