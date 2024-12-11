@@ -5,6 +5,7 @@ using CodeInk.Core.Repositories;
 using CodeInk.Core.Service;
 using CodeInk.Core.Specifications;
 using CodeInk.Service.DTOs.Order;
+using CodeInk.Service.DTOs.Payment;
 using CodeInk.Service.Services.Interfaces;
 
 namespace CodeInk.Service.Services.Implementations;
@@ -55,8 +56,22 @@ public class OrderService : IOrderService
 
         #endregion
 
-        #region Todo : Payment
-        //orderRequest = await _paymentService.CreateOrUpdatePaymentIntent(subTotal + deliveryMethod.Price, orderRequest);
+        #region Payment
+
+        // check for existing order with the same paymentIntentId
+        // if exist remove old and update paymentIntent with new amount
+
+        var existingOrder = await _orderRepo.GetWithSpecAsync(new OrderByPaymentIntentIdSpecification(orderRequest.PaymentIntentId));
+
+        if (existingOrder is not null)
+        {
+            existingOrder.IsActive = false;
+            await _orderRepo.UpdateAsync(existingOrder);
+
+            // update paymentIntent amount for old order
+            await _paymentService.CreateOrUpdatePaymentIntent(_mapper.Map<PaymentCartDto>(orderRequest));
+        }
+
         #endregion
 
         #region Create Order

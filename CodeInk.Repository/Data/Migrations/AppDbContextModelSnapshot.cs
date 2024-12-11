@@ -70,7 +70,7 @@ namespace CodeInk.Repository.Data.Migrations
                     b.HasIndex("ISBN")
                         .IsUnique();
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.BookCategory", b =>
@@ -85,7 +85,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BookCategories");
+                    b.ToTable("BookCategories", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.Category", b =>
@@ -112,7 +112,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.OrderEntities.DeliveryMethod", b =>
@@ -152,7 +152,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryMethods");
+                    b.ToTable("DeliveryMethods", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.OrderEntities.Order", b =>
@@ -197,7 +197,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasIndex("DeliveryMethodId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.OrderEntities.OrderItem", b =>
@@ -243,7 +243,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("CodeInk.Core.Entities.BookCategory", b =>
@@ -273,7 +273,7 @@ namespace CodeInk.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("CodeInk.Core.Entities.OrderEntities.Address", "ShippingAddress", b1 =>
+                    b.OwnsOne("CodeInk.Core.Entities.OrderEntities.Order.ShippingAddress#CodeInk.Core.Entities.OrderEntities.Address", "ShippingAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -304,7 +304,7 @@ namespace CodeInk.Repository.Data.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders");
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");

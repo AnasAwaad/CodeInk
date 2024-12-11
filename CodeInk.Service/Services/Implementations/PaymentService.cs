@@ -33,12 +33,13 @@ public class PaymentService : IPaymentService
         StripeConfiguration.ApiKey = _configuration["Stripe:Secretkey"];
 
         var totalPrice = 0m;
-        if (paymentCart.DelivaryMethodId.HasValue)
+        if (paymentCart.DeliveryMethodId.HasValue)
         {
-            var deliveryMethod = await _deliveryMethod.GetByIdAsync(paymentCart.DelivaryMethodId.Value)
-                    ?? throw new DeliveryMethodNotFoundException(paymentCart.DelivaryMethodId.Value);
+            var deliveryMethod = await _deliveryMethod.GetByIdAsync(paymentCart.DeliveryMethodId.Value)
+                    ?? throw new DeliveryMethodNotFoundException(paymentCart.DeliveryMethodId.Value);
 
             totalPrice = deliveryMethod.Price;
+            paymentCart.ShippingPrice = deliveryMethod.Price;
         }
 
         if (paymentCart.CartItems.Any())

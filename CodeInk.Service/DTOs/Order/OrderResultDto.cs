@@ -1,4 +1,5 @@
-﻿using CodeInk.Service.DTOs.User;
+﻿using CodeInk.Service.DTOs.Payment;
+using CodeInk.Service.DTOs.User;
 
 namespace CodeInk.Service.DTOs.Order;
 public class OrderResultDto
@@ -9,7 +10,9 @@ public class OrderResultDto
     public string PaymentStatus { get; set; }
     public AddressDto ShippingAddress { get; set; }
     public string DeliveryMethod { get; set; }
-    public ICollection<OrderItemDto> OrderItems { get; set; } = new HashSet<OrderItemDto>();
+    public decimal DeliveryMethodCost { get; set; }
+    public ICollection<CartItemDto> OrderItems { get; set; } = new HashSet<CartItemDto>();
     public decimal SubTotal { get; set; }
+    public decimal Total { get; set; }
     public string PaymentIntentId { get; set; }
 }

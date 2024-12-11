@@ -7,6 +7,7 @@ using CodeInk.Core.Entities.OrderEntities;
 using CodeInk.Repository.Models;
 using CodeInk.Service.DTOs.Basket;
 using CodeInk.Service.DTOs.Order;
+using CodeInk.Service.DTOs.Payment;
 using CodeInk.Service.DTOs.User;
 
 namespace CodeInk.Application.Mapping;
@@ -40,10 +41,14 @@ public class MappingProfiles : Profile
         CreateMap<ShippingAddressDto, Address>();
         CreateMap<DeliveryMethod, DeliveryMethodDto>();
 
-        CreateMap<OrderItem, OrderItemDto>();
+        CreateMap<OrderItem, CartItemDto>();
+        CreateMap<OrderRequestDto, PaymentCartDto>()
+            .ForMember(dest => dest.CartItems, opt => opt.MapFrom(src => src.OrderItems));
 
         CreateMap<Order, OrderResultDto>()
             .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.DeliveryMethod, opt => opt.MapFrom(src => src.DeliveryMethod.ShortName));
+            .ForMember(dest => dest.DeliveryMethod, opt => opt.MapFrom(src => src.DeliveryMethod.ShortName))
+            .ForMember(dest => dest.DeliveryMethodCost, opt => opt.MapFrom(src => src.DeliveryMethod.Price))
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.GetTotal));
     }
 }
