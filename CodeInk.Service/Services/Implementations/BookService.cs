@@ -43,7 +43,7 @@ public class BookService : IBookService
     public async Task<BookDetailDto?> GetBookByIdAsync(int id)
     {
         var bookSpec = new BookWithCategoriesSpecification(id);
-        var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
+        var book = await _bookRepo.GetWithSpecAsync(bookSpec);
 
         if (book is null)
             throw new BookNotFoundException(id);
@@ -81,7 +81,7 @@ public class BookService : IBookService
     public async Task UpdateBookAsync(UpdateBookDto bookDto)
     {
         var bookSpec = new BookWithCategoriesSpecification(bookDto.Id);
-        var book = await _bookRepo.GetByIdWithSpecAsync(bookSpec);
+        var book = await _bookRepo.GetWithSpecAsync(bookSpec);
 
         if (book is null)
             throw new BookNotFoundException(bookDto.Id);
@@ -114,7 +114,7 @@ public class BookService : IBookService
     {
         var spec = new BookByIdSpecification(id);
 
-        var book = await _bookRepo.GetByIdWithSpecAsync(spec);
+        var book = await _bookRepo.GetWithSpecAsync(spec);
 
         if (book is null)
             throw new BookNotFoundException(id);

@@ -5,13 +5,14 @@ public class Order : BaseEntity
     {
 
     }
-    public Order(string buyerEmail, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> orderItems, decimal subTotal)
+    public Order(string buyerEmail, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> orderItems, decimal subTotal, string paymentIntentId)
     {
         BuyerEmail = buyerEmail;
         ShippingAddress = shippingAddress;
         DeliveryMethod = deliveryMethod;
         OrderItems = orderItems;
         SubTotal = subTotal;
+        PaymentIntentId = paymentIntentId;
     }
 
     public string BuyerEmail { get; set; }
@@ -22,7 +23,7 @@ public class Order : BaseEntity
     public DeliveryMethod DeliveryMethod { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
     public decimal SubTotal { get; set; }
-    public string PaymentIntentId { get; set; } = string.Empty;
+    public string PaymentIntentId { get; set; }
     public decimal GetTotal
         => SubTotal + DeliveryMethod.Price;
 

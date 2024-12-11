@@ -44,7 +44,7 @@ public class CategoryService : ICategoryService
     public async Task<CategoryToReturnDto?> GetCategoryByIdAsync(int id)
     {
         var categorySpec = new CategoryWithBooksSpecification(id);
-        var category = await _categoryRepo.GetByIdWithSpecAsync(categorySpec);
+        var category = await _categoryRepo.GetWithSpecAsync(categorySpec);
 
         if (category is null)
             throw new CategoryNotFoundException(id);
@@ -56,7 +56,7 @@ public class CategoryService : ICategoryService
     {
         var spec = new CategoryByIdSpecification(id);
 
-        var category = await _categoryRepo.GetByIdWithSpecAsync(spec);
+        var category = await _categoryRepo.GetWithSpecAsync(spec);
 
         if (category is null)
             throw new CategoryNotFoundException(id);
@@ -70,7 +70,7 @@ public class CategoryService : ICategoryService
     {
         var spec = new CategoryByIdSpecification(categoryDto.Id);
 
-        var category = await _categoryRepo.GetByIdWithSpecAsync(spec);
+        var category = await _categoryRepo.GetWithSpecAsync(spec);
 
         if (category is null)
             throw new CategoryNotFoundException(categoryDto.Id);

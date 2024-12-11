@@ -14,27 +14,29 @@ public class OrderService : IOrderService
     private readonly IGenericRepository<DeliveryMethod> _deliverMethod;
     private readonly IGenericRepository<Order> _orderRepo;
     private readonly IBookService _bookService;
+    private readonly IPaymentService _paymentService;
 
-    public OrderService(IMapper mapper, IGenericRepository<DeliveryMethod> deliverMethod, IBookService bookService, IGenericRepository<Order> orderRepo)
+    public OrderService(IMapper mapper, IGenericRepository<DeliveryMethod> deliverMethod, IBookService bookService, IGenericRepository<Order> orderRepo, IPaymentService paymentService)
     {
         _mapper = mapper;
         _deliverMethod = deliverMethod;
         _bookService = bookService;
         _orderRepo = orderRepo;
+        _paymentService = paymentService;
     }
-    public async Task<OrderResultDto> CreateOrderAsync(OrderRequestDto orderRquest, string userEmail)
+    public async Task<OrderResultDto> CreateOrderAsync(OrderRequestDto orderRequest, string userEmail)
     {
         #region Get delivery method
 
-        var deliveryMethod = await _deliverMethod.GetByIdAsync(orderRquest.DeliveryMethodId)
-                            ?? throw new DeliveryMethodNotFoundException(orderRquest.DeliveryMethodId);
+        var deliveryMethod = await _deliverMethod.GetByIdAsync(orderRequest.DeliveryMethodId)
+                            ?? throw new DeliveryMethodNotFoundException(orderRequest.DeliveryMethodId);
         #endregion
 
         #region Fill order item list with items and calc subTotal
 
         var orderItems = new List<OrderItem>();
         decimal subTotal = 0;
-        foreach (var item in orderRquest.OrderItems)
+        foreach (var item in orderRequest.OrderItems)
         {
             var bookFromDb = await _bookService.GetBookByIdAsync(item.BookId)
                             ?? throw new BookNotFoundException(item.BookId);
@@ -54,12 +56,13 @@ public class OrderService : IOrderService
         #endregion
 
         #region Todo : Payment
+        //orderRequest = await _paymentService.CreateOrUpdatePaymentIntent(subTotal + deliveryMethod.Price, orderRequest);
         #endregion
 
         #region Create Order
 
-        var address = _mapper.Map<Address>(orderRquest.ShippingAddress);
-        var order = new Order(userEmail, address, deliveryMethod, orderItems, subTotal);
+        var address = _mapper.Map<Address>(orderRequest.ShippingAddress);
+        var order = new Order(userEmail, address, deliveryMethod, orderItems, subTotal, orderRequest.PaymentIntentId!);
         await _orderRepo.CreateAsync(order);
 
         #endregion
@@ -76,7 +79,7 @@ public class OrderService : IOrderService
 
     public async Task<OrderResultDto> GetOrderByIdAsync(int id)
     {
-        var order = await _orderRepo.GetByIdWithSpecAsync(new OrderWithIncludesSpecification(id))
+        var order = await _orderRepo.GetWithSpecAsync(new OrderWithIncludesSpecification(id))
                    ?? throw new OrderNotFoundException(id);
 
         return _mapper.Map<OrderResultDto>(order);

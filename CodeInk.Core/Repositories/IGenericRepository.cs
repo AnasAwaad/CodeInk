@@ -16,7 +16,7 @@ public interface IGenericRepository<T> where T : BaseEntity
 
     #region Specification
     Task<IEnumerable<T>> GetAllWithSpecAsync(IBaseSpecification<T> spec);
-    Task<T> GetByIdWithSpecAsync(IBaseSpecification<T> spec);
+    Task<T> GetWithSpecAsync(IBaseSpecification<T> spec);
     Task<bool> IsExistsWithSpecAsync(IBaseSpecification<T> spec);
     Task<int> CountWithSpecAsync(IBaseSpecification<T> spec);
     #endregion

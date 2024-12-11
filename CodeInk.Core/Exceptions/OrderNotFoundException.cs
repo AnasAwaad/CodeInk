@@ -5,4 +5,9 @@ public class OrderNotFoundException : NotFoundException
     {
 
     }
+
+    public OrderNotFoundException(string paymentIntentId) : base($"Order with PaymentIntentId : {paymentIntentId} Not Found.")
+    {
+
+    }
 }
