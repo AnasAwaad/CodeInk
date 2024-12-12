@@ -32,7 +32,7 @@ public class BooksController : APIBaseController
         return Ok(new ApiResponse(200, "Book retrived successfully", data));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> CreateBook(CreateBookDto bookDto)
     {
@@ -40,7 +40,7 @@ public class BooksController : APIBaseController
         return Ok(new ApiResponse(201, "Book created successfully", new { bookId }));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<ActionResult> UpdateBook(UpdateBookDto bookDto)
     {
@@ -48,7 +48,7 @@ public class BooksController : APIBaseController
         return Ok(new ApiResponse(200, "Book updated successfully"));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteBook(int id)
     {

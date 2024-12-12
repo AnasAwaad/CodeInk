@@ -1,4 +1,4 @@
-﻿using CodeInk.Core.Entities;
+﻿using CodeInk.Core.Entities.OrderEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

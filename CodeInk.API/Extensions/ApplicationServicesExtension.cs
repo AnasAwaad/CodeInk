@@ -26,6 +26,8 @@ public static class ApplicationServicesExtension
         Services.AddScoped<IBasketService, BasketService>();
         Services.AddScoped<ITokenService, TokenService>();
         Services.AddScoped<IUserService, UserService>();
+        Services.AddScoped<IOrderService, OrderService>();
+        Services.AddScoped<IPaymentService, PaymentService>();
 
         Services.AddAutoMapper(typeof(MappingProfiles));
 

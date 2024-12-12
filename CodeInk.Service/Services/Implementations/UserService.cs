@@ -29,7 +29,8 @@ public class UserService : IUserService
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
 
-        var user = await _userManager.FindByEmailAsync(email!);
+        var user = await _userManager.FindByEmailAsync(email)
+                   ?? throw new UserNotFoundException(email);
 
         return new UserDto
         {
@@ -46,9 +47,10 @@ public class UserService : IUserService
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
 
-        var user = await _userManager.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _userManager.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Email == email)
+                ?? throw new UserNotFoundException(email);
 
-        return _mapper.Map<AddressDto>(user!.Address);
+        return _mapper.Map<AddressDto>(user.Address);
     }
 
 
@@ -62,7 +64,7 @@ public class UserService : IUserService
         var result = await _signInManager.CheckPasswordSignInAsync(user, input.Password, false);
 
         if (!result.Succeeded)
-            throw new UnAuthorizedException();
+            throw new UnAuthorizedException("Invalid Email or Password");
 
         var roles = await _userManager.GetRolesAsync(user);
 
@@ -107,7 +109,8 @@ public class UserService : IUserService
     public async Task<AddressDto> UpdateUserAddressAsync(ClaimsPrincipal User, AddressDto addressDto)
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
-        var user = await _userManager.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _userManager.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Email == email)
+                   ?? throw new UserNotFoundException(email);
 
         user.Address = _mapper.Map(addressDto, user.Address);
 
