@@ -7,18 +7,21 @@ using Stripe;
 
 namespace CodeInk.API.Controllers;
 
-[Authorize(Roles = "Customer")]
 public class PaymentsController : APIBaseController
 {
     private readonly IPaymentService _paymentService;
+    private readonly ILogger<PaymentsController> _logger;
 
-    public PaymentsController(IPaymentService paymentService)
+    public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger)
     {
         _paymentService = paymentService;
+        _logger = logger;
     }
 
 
     [HttpPost]
+    [Authorize(Roles = "Customer")]
+
     public async Task<IActionResult> CreateOrUpdatePaymentIntent(PaymentCartDto paymentCart)
     {
         var result = await _paymentService.CreateOrUpdatePaymentIntent(paymentCart);
@@ -40,14 +43,22 @@ public class PaymentsController : APIBaseController
         if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
         {
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            _logger.Log(LogLevel.Information, "Payment completed successfully ya anas", paymentIntent.Id);
             await _paymentService.UpdateOrderPaymentSucceeded(paymentIntent.Id);
 
         }
         else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
         {
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            _logger.Log(LogLevel.Information, "Payment failed ya anas :)", paymentIntent.Id);
 
             await _paymentService.UpdateOrderPaymentFailed(paymentIntent.Id);
+        }
+        else if (stripeEvent.Type == EventTypes.PaymentIntentCreated)
+        {
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            _logger.Log(LogLevel.Information, "Payment intent id created ya anas", paymentIntent.Id);
+
         }
 
         return new EmptyResult();
