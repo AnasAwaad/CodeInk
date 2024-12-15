@@ -32,18 +32,18 @@ public class CategoryService : ICategoryService
         return mappedCategory.Id;
     }
 
-    public async Task<IEnumerable<CategoryToReturnDto>> GetCategoriesAsync()
+    public async Task<IEnumerable<CategoryToReturnDto>> GetAllCategoriesAsync(bool applyActiveFilteration = true)
     {
-        var categorySpec = new CategoryWithBooksSpecification();
+        var categorySpec = new CategoryWithBooksSpecification(applyActiveFilteration);
 
         var categories = await _categoryRepo.GetAllWithSpecAsync(categorySpec);
 
         return _mapper.Map<IEnumerable<CategoryToReturnDto>>(categories);
     }
 
-    public async Task<CategoryToReturnDto?> GetCategoryByIdAsync(int id)
+    public async Task<CategoryToReturnDto?> GetCategoryByIdAsync(int id, bool applyActiveFilteration = true)
     {
-        var categorySpec = new CategoryWithBooksSpecification(id);
+        var categorySpec = new CategoryWithBooksSpecification(id, applyActiveFilteration);
         var category = await _categoryRepo.GetWithSpecAsync(categorySpec);
 
         if (category is null)
@@ -83,7 +83,7 @@ public class CategoryService : ICategoryService
             throw new CategoryNameAlreadyExistsException(categoryDto.Name);
 
         category = _mapper.Map(categoryDto, category);
-
+        category.LastUpdatedOn = DateTime.Now;
         await _categoryRepo.UpdateAsync(category);
 
     }

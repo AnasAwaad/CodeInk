@@ -16,11 +16,18 @@ public class BooksController : APIBaseController
         _bookService = bookService;
     }
 
-
-    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
     public async Task<IActionResult> GetBooks([FromQuery] BookSpecParams bookParams)
     {
-        var data = await _bookService.GetBooksAsync(bookParams);
+        var data = await _bookService.GetAllBooksAsync(bookParams, false);
+        return Ok(new ApiResponse(200, "Books retrived successfully", data));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetActiveBooks([FromQuery] BookSpecParams bookParams)
+    {
+        var data = await _bookService.GetAllBooksAsync(bookParams);
         return Ok(new ApiResponse(200, "Books retrived successfully", data));
     }
 

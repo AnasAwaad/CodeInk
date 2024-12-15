@@ -32,7 +32,7 @@ public class PaymentsController : APIBaseController
     public async Task<IActionResult> StripeWebHook()
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-        const string endpointSecret = "whsec_34d7d3c08a44698b2cfda012f1fe3a2c971e73be8acd05195e411fdae6dbe5ae";
+        const string endpointSecret = "whsec_vcVx1Iz4Dn71NLoYYSUrby4k1GuqcmlM";
 
         var stripeEvent = EventUtility.ParseEvent(json);
         var signatureHeader = Request.Headers["Stripe-Signature"];

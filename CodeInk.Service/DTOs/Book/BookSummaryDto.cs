@@ -8,5 +8,8 @@ public class BookSummaryDto
     public string Author { get; set; } = null!;
     public decimal Price { get; set; }
     public string? Description { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastUpdatedOn { get; set; }
     public string CoverImageUrl { get; set; } = null!;
 }

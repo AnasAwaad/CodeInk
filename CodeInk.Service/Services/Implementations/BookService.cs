@@ -23,15 +23,14 @@ public class BookService : IBookService
         _categoryRepo = categoryRepo;
     }
 
-    public async Task<Pagination<BookDetailDto>> GetBooksAsync(BookSpecParams bookParams)
+    public async Task<Pagination<BookDetailDto>> GetAllBooksAsync(BookSpecParams bookParams, bool applyActiveFilteration = true)
     {
-        var bookSpec = new BookWithCategoriesSpecification(bookParams);
+        var bookSpec = new BookWithCategoriesSpecification(bookParams, applyActiveFilteration);
         var books = await _bookRepo.GetAllWithSpecAsync(bookSpec);
 
         var mappedBooks = _mapper.Map<IReadOnlyList<BookDetailDto>>(books);
 
-        var activeBookSpec = new ActiveBooksSpecification();
-        var count = await _bookRepo.CountWithSpecAsync(activeBookSpec);
+        var count = await _bookRepo.CountAllAsync();
 
         var totalPages = (int)Math.Ceiling(count * 1.0 / bookParams.PageSize);
 
@@ -40,9 +39,10 @@ public class BookService : IBookService
             (bookParams.PageNumber, bookParams.PageSize, totalPages, count, mappedBooks);
     }
 
-    public async Task<BookDetailDto?> GetBookByIdAsync(int id)
+
+    public async Task<BookDetailDto?> GetBookByIdAsync(int id, bool applyActiveFilteration = true)
     {
-        var bookSpec = new BookWithCategoriesSpecification(id);
+        var bookSpec = new BookWithCategoriesSpecification(id, applyActiveFilteration);
         var book = await _bookRepo.GetWithSpecAsync(bookSpec);
 
         if (book is null)
@@ -80,7 +80,7 @@ public class BookService : IBookService
 
     public async Task UpdateBookAsync(UpdateBookDto bookDto)
     {
-        var bookSpec = new BookWithCategoriesSpecification(bookDto.Id);
+        var bookSpec = new BookWithCategoriesSpecification(bookDto.Id, false);
         var book = await _bookRepo.GetWithSpecAsync(bookSpec);
 
         if (book is null)
@@ -106,7 +106,7 @@ public class BookService : IBookService
         // remove old categories for book and then add new categories to book
         book.BookCategories.Clear();
         await AddCategoriesToBookAsync(bookDto.CategoryIds, book);
-
+        book.LastUpdatedOn = DateTime.Now;
         await _bookRepo.UpdateAsync(book);
     }
 
