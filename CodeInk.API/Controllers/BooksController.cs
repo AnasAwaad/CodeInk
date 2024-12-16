@@ -17,23 +17,30 @@ public class BooksController : APIBaseController
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpGet("all")]
-    public async Task<IActionResult> GetBooks([FromQuery] BookSpecParams bookParams)
+    [HttpGet]
+    public async Task<IActionResult> GetAllBooks([FromQuery] BookSpecParams bookParams)
     {
         var data = await _bookService.GetAllBooksAsync(bookParams, false);
         return Ok(new ApiResponse(200, "Books retrived successfully", data));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetActiveBooks([FromQuery] BookSpecParams bookParams)
+    [HttpGet("Published")]
+    public async Task<IActionResult> GetPublishedBooks([FromQuery] BookSpecParams bookParams)
     {
         var data = await _bookService.GetAllBooksAsync(bookParams);
         return Ok(new ApiResponse(200, "Books retrived successfully", data));
     }
 
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetBookById(int id)
+    {
+        var data = await _bookService.GetBookByIdAsync(id, false);
+        return Ok(new ApiResponse(200, "Book retrived successfully", data));
+    }
+
+    [HttpGet("Published/{id}")]
+    public async Task<IActionResult> GetPublishedBookById(int id)
     {
         var data = await _bookService.GetBookByIdAsync(id);
         return Ok(new ApiResponse(200, "Book retrived successfully", data));

@@ -13,7 +13,7 @@ public class BookConfig : IEntityTypeConfiguration<Book>
         builder.Property(b => b.Description).HasMaxLength(1000);
         builder.Property(b => b.Price).HasColumnType("decimal(18,2)");
         builder.Property(b => b.CoverImageUrl).HasMaxLength(500);
-
+        builder.Property(b => b.IsPublished).HasDefaultValue(true);
         // Make ISBN unique
         builder.HasIndex(b => b.ISBN).IsUnique();
 

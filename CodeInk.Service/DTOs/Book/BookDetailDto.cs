@@ -11,7 +11,7 @@ public class BookDetailDto
     public decimal Price { get; set; }
     public string? Description { get; set; }
     public string CoverImageUrl { get; set; } = null!;
-    public bool IsActive { get; set; }
+    public bool IsPublished { get; set; }
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastUpdatedOn { get; set; }
     public ICollection<BookCategoriesDto> Categories { get; set; }

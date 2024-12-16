@@ -22,15 +22,18 @@ public class BookService : IBookService
         _fileService = fileService;
         _categoryRepo = categoryRepo;
     }
-
-    public async Task<Pagination<BookDetailDto>> GetAllBooksAsync(BookSpecParams bookParams, bool applyActiveFilteration = true)
+    // get all published and unPublished books
+    // OR
+    // get all published books only (default)
+    public async Task<Pagination<BookDetailDto>> GetAllBooksAsync(BookSpecParams bookParams, bool publishedOnly = true)
     {
-        var bookSpec = new BookWithCategoriesSpecification(bookParams, applyActiveFilteration);
+        var bookSpec = new BookWithCategoriesSpecification(bookParams, publishedOnly);
         var books = await _bookRepo.GetAllWithSpecAsync(bookSpec);
 
         var mappedBooks = _mapper.Map<IReadOnlyList<BookDetailDto>>(books);
 
-        var count = await _bookRepo.CountAllAsync();
+        var activeBookSpec = new ActiveBooksSpecification(publishedOnly);
+        var count = await _bookRepo.CountWithSpecAsync(activeBookSpec);
 
         var totalPages = (int)Math.Ceiling(count * 1.0 / bookParams.PageSize);
 
@@ -39,10 +42,12 @@ public class BookService : IBookService
             (bookParams.PageNumber, bookParams.PageSize, totalPages, count, mappedBooks);
     }
 
-
-    public async Task<BookDetailDto?> GetBookByIdAsync(int id, bool applyActiveFilteration = true)
+    // get published and unPublished book
+    // OR
+    // get published book only (default)
+    public async Task<BookDetailDto?> GetBookByIdAsync(int id, bool publishedOnly = true)
     {
-        var bookSpec = new BookWithCategoriesSpecification(id, applyActiveFilteration);
+        var bookSpec = new BookWithCategoriesSpecification(id, publishedOnly);
         var book = await _bookRepo.GetWithSpecAsync(bookSpec);
 
         if (book is null)

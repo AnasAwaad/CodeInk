@@ -3,7 +3,7 @@
 namespace CodeInk.Core.Specifications;
 public class ActiveBooksSpecification : BaseSpecification<Book>
 {
-    public ActiveBooksSpecification() : base(b => b.IsActive)
+    public ActiveBooksSpecification(bool publishedOnly) : base(b => (!publishedOnly || b.IsPublished) && b.IsActive)
     {
 
     }
