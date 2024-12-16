@@ -16,16 +16,8 @@ public class CategoriesController : APIBaseController
         _categoryService = categoryService;
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpGet("All")]
-    public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetAllCategories()
-    {
-        var data = await _categoryService.GetAllCategoriesAsync(false);
-        return Ok(new ApiResponse(200, "Categories retrived successfully", data));
-    }
-
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetAllActiveCategories()
+    public async Task<ActionResult<IEnumerable<CategoryToReturnDto>>> GetAllCategories()
     {
         var data = await _categoryService.GetAllCategoriesAsync();
         return Ok(new ApiResponse(200, "Categories retrived successfully", data));

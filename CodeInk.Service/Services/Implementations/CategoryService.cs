@@ -32,18 +32,18 @@ public class CategoryService : ICategoryService
         return mappedCategory.Id;
     }
 
-    public async Task<IEnumerable<CategoryToReturnDto>> GetAllCategoriesAsync(bool applyActiveFilteration = true)
+    public async Task<IEnumerable<CategoryToReturnDto>> GetAllCategoriesAsync()
     {
-        var categorySpec = new CategoryWithBooksSpecification(applyActiveFilteration);
+        var categorySpec = new CategoryWithBooksSpecification();
 
         var categories = await _categoryRepo.GetAllWithSpecAsync(categorySpec);
 
         return _mapper.Map<IEnumerable<CategoryToReturnDto>>(categories);
     }
 
-    public async Task<CategoryToReturnDto?> GetCategoryByIdAsync(int id, bool applyActiveFilteration = true)
+    public async Task<CategoryToReturnDto?> GetCategoryByIdAsync(int id)
     {
-        var categorySpec = new CategoryWithBooksSpecification(id, applyActiveFilteration);
+        var categorySpec = new CategoryWithBooksSpecification(id);
         var category = await _categoryRepo.GetWithSpecAsync(categorySpec);
 
         if (category is null)
