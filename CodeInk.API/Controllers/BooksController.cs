@@ -46,6 +46,14 @@ public class BooksController : APIBaseController
         return Ok(new ApiResponse(200, "Book retrived successfully", data));
     }
 
+    [HttpGet("{id}/related")]
+    public async Task<IActionResult> GetRelatedBooks(int id)
+    {
+        var relatedBooks = await _bookService.GetAllRelatedBooksAsync(id);
+        return Ok(new ApiResponse(200, "Related Books retrived successfully", relatedBooks));
+    }
+
+
     [Authorize(Roles = "Admin")]
     [RequestSizeLimit(10485760)]
     [HttpPost]

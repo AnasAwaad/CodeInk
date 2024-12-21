@@ -129,6 +129,23 @@ public class BookService : IBookService
     }
 
 
+    public async Task<IEnumerable<BookDetailDto>> GetAllRelatedBooksAsync(int bookId)
+    {
+        var bookSpec = new BookWithCategoriesSpecification(bookId, true);
+        var book = await _bookRepo.GetWithSpecAsync(bookSpec);
+
+        if (book is null)
+            throw new BookNotFoundException(bookId);
+
+        var bookCategories = book.BookCategories.Select(bc => bc.CategoryId).ToList();
+
+        var relatedBooksSpec = new RelatedBooksSpecification(bookId, bookCategories);
+
+        var books = await _bookRepo.GetAllWithSpecAsync(relatedBooksSpec);
+
+        return _mapper.Map<IEnumerable<BookDetailDto>>(books);
+    }
+
     #region Private methods
     private async Task<bool> CheckIfISBNExistsAsync(string isbn)
     {
