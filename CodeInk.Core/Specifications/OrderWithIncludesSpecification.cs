@@ -16,4 +16,11 @@ public class OrderWithIncludesSpecification : BaseSpecification<Order>
 
         SetOrderBy(o => o.OrderDate);
     }
+    public OrderWithIncludesSpecification() : base(o => o.IsActive)
+    {
+        Includes.Add(o => o.DeliveryMethod);
+        Includes.Add(o => o.OrderItems);
+
+        SetOrderBy(o => o.OrderDate);
+    }
 }

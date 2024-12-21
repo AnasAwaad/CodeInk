@@ -47,6 +47,7 @@ public class BooksController : APIBaseController
     }
 
     [Authorize(Roles = "Admin")]
+    [RequestSizeLimit(10485760)]
     [HttpPost]
     public async Task<ActionResult> CreateBook(CreateBookDto bookDto)
     {
@@ -55,6 +56,7 @@ public class BooksController : APIBaseController
     }
 
     [Authorize(Roles = "Admin")]
+    [RequestSizeLimit(10485760)]
     [HttpPut]
     public async Task<ActionResult> UpdateBook(UpdateBookDto bookDto)
     {

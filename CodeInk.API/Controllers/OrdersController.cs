@@ -1,4 +1,5 @@
 ﻿using CodeInk.API.Errors;
+using CodeInk.Core.Specifications;
 using CodeInk.Service.DTOs.Order;
 using CodeInk.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,6 @@ using System.Security.Claims;
 
 namespace CodeInk.API.Controllers;
 
-[Authorize(Roles = "Customer")]
 public class OrdersController : APIBaseController
 {
     private readonly IOrderService _orderService;
@@ -17,7 +17,15 @@ public class OrdersController : APIBaseController
         _orderService = orderService;
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllOrders([FromQuery] OrderSpecParams orderParams)
+    {
+        var data = await _orderService.GetAllOrdersAsync(orderParams);
+        return Ok(new ApiResponse(200, "Orders retrived successfully", data));
+    }
 
+    [Authorize(Roles = "Customer")]
     [HttpPost]
     public async Task<IActionResult> CreateOrder(OrderRequestDto request)
     {
@@ -27,7 +35,7 @@ public class OrdersController : APIBaseController
         return Ok(new ApiResponse(201, "Order Created Successfully", order));
     }
 
-
+    [Authorize(Roles = "Customer")]
     [HttpGet]
     public async Task<IActionResult> GetOrdersByEmail(string email)
     {
@@ -35,6 +43,7 @@ public class OrdersController : APIBaseController
         return Ok(new ApiResponse(200, "Orders retrived successfully", orders));
     }
 
+    [Authorize(Roles = "Customer")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById(int id)
     {
@@ -42,6 +51,7 @@ public class OrdersController : APIBaseController
         return Ok(new ApiResponse(200, "Order retrived successfully", order));
     }
 
+    [Authorize(Roles = "Customer")]
     [HttpGet("DeliveryMethods")]
     public async Task<IActionResult> GetDeliveryMethods()
     {

@@ -3,6 +3,7 @@ using CodeInk.API.Middlewares;
 using CodeInk.Core.Entities.IdentityEntities;
 using CodeInk.Repository.Data;
 using CodeInk.Repository.Identity;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -54,6 +55,12 @@ public class Program
             });
         });
         #endregion
+
+        builder.Services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 10485760;
+            options.MemoryBufferThreshold = 10485760;
+        });
 
         var app = builder.Build();
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CodeInk.Application.DTOs;
 using CodeInk.Core.Entities.OrderEntities;
 using CodeInk.Core.Exceptions;
 using CodeInk.Core.Repositories;
@@ -90,6 +91,23 @@ public class OrderService : IOrderService
         var deliveryMethods = await _deliverMethod.GetAllAsync();
 
         return _mapper.Map<IEnumerable<DeliveryMethodDto>>(deliveryMethods);
+    }
+
+    public async Task<Pagination<OrderResultDto>> GetAllOrdersAsync(OrderSpecParams orderParams)
+    {
+        var orderSpec = new OrderWithIncludesSpecification();
+        var orders = await _orderRepo.GetAllWithSpecAsync(orderSpec);
+
+        var mappedOrder = _mapper.Map<IReadOnlyList<OrderResultDto>>(orders);
+
+        var activeOrdersSpec = new ActiveOrdersSpecification();
+        var count = await _orderRepo.CountWithSpecAsync(activeOrdersSpec);
+
+        var totalPages = (int)Math.Ceiling(count * 1.0 / orderParams.PageSize);
+
+
+        return new Pagination<OrderResultDto>
+            (orderParams.PageNumber, orderParams.PageSize, totalPages, count, mappedOrder);
     }
 
     public async Task<OrderResultDto> GetOrderByIdAsync(int id)
